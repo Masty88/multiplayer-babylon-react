@@ -24,54 +24,56 @@ class PlayerController extends GameObject{
     gravity = new Vector3();
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
 
-    constructor(shadowGenerator,input,color) {
+    constructor(input,player) {
         super();
         this.setupPlayerCamera();
-        this.loadCharacterAssets(shadowGenerator,color)
+        // this.loadCharacterAssets(shadowGenerator,color)
+        this.player= player
         this.input = input;
     }
 
-    loadCharacterAssets(shadowGenerator,color){
-        this.mesh = MeshBuilder.CreateBox("outer", {width: 2, depth: 1, height: 3});
-        this.mesh.isVisible = false;
-        this.mesh.isPickable = false;
-        this.mesh.checkCollisions = true;
+    // loadCharacterAssets(shadowGenerator,color){
+    //     this.mesh = MeshBuilder.CreateBox("outer", {width: 2, depth: 1, height: 3});
+    //     this.mesh.isVisible = false;
+    //     this.mesh.isPickable = false;
+    //     this.mesh.checkCollisions = true;
+    //
+    //
+    //     //move origin of box collider to the bottom of the mesh (to match player mesh)
+    //     this.mesh.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0))
+    //
+    //     //for collisions
+    //     this.mesh.ellipsoid = new Vector3(1, 1.5, 1);
+    //     this.mesh.ellipsoidOffset = new Vector3(0, 1.5, 0);
+    //
+    //     this.mesh.rotationQuaternion = new Quaternion(0, 1, 0, 0); // rotate the player mesh 180 since we want to see the back of the player
+    //     this.mesh.position= new Vector3(0,0,0)
+    //
+    //     const box = MeshBuilder.CreateBox("Small1", {
+    //         width: 0.5,
+    //         depth: 0.5,
+    //         height: 0.25,
+    //         faceColors: [new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1)]
+    //     });
+    //     box.position.y = 0.5;
+    //     box.position.z = 1;
+    //
+    //     const body = Mesh.CreateCylinder("body", 3, 2, 2, 0, 0);
+    //     const bodymtl = new StandardMaterial("red");
+    //     bodymtl.diffuseColor = color;
+    //     body.material = bodymtl;
+    //     body.isPickable = false;
+    //     body.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0)); // simulates the imported mesh's origin
+    //
+    //     //parent the meshes
+    //     box.parent = body;
+    //     body.parent = this.mesh;
+    //     shadowGenerator.addShadowCaster(this.mesh); //the player mesh will cast shadows
+    // }
 
-
-        //move origin of box collider to the bottom of the mesh (to match player mesh)
-        this.mesh.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0))
-
-        //for collisions
-        this.mesh.ellipsoid = new Vector3(1, 1.5, 1);
-        this.mesh.ellipsoidOffset = new Vector3(0, 1.5, 0);
-
-        this.mesh.rotationQuaternion = new Quaternion(0, 1, 0, 0); // rotate the player mesh 180 since we want to see the back of the player
-        this.mesh.position= new Vector3(0,0,0)
-
-        const box = MeshBuilder.CreateBox("Small1", {
-            width: 0.5,
-            depth: 0.5,
-            height: 0.25,
-            faceColors: [new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1)]
-        });
-        box.position.y = 0.5;
-        box.position.z = 1;
-
-        const body = Mesh.CreateCylinder("body", 3, 2, 2, 0, 0);
-        const bodymtl = new StandardMaterial("red");
-        bodymtl.diffuseColor = color;
-        body.material = bodymtl;
-        body.isPickable = false;
-        body.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0)); // simulates the imported mesh's origin
-
-        //parent the meshes
-        box.parent = body;
-        body.parent = this.mesh;
-        shadowGenerator.addShadowCaster(this.mesh); //the player mesh will cast shadows
-    }
 
     floorRayCast(offsetx, offsetz, raycastlen){
-        let raycastFloorPos = new Vector3(this.mesh.position.x + offsetx, this.mesh.position.y + 0.5, this.mesh.position.z + offsetz);
+        let raycastFloorPos = new Vector3(this.player.mesh.position.x + offsetx, this.player.mesh.position.y + 0.5, this.player.mesh.position.z + offsetz);
         let ray = new Ray(raycastFloorPos, Vector3.Up().scale(-1), raycastlen);
         let predicate = function (mesh) {
             return mesh.isPickable && mesh.isEnabled();
@@ -100,11 +102,11 @@ class PlayerController extends GameObject{
         if (this.gravity.y < -PlayerController.JUMP_FORCE) {
             this.gravity.y = -PlayerController.JUMP_FORCE;
         }
-        this.mesh.moveWithCollisions(this.moveDirection.addInPlace(this.gravity));
+        this.player.mesh.moveWithCollisions(this.moveDirection.addInPlace(this.gravity));
         if (this.isGrounded()) {
             this.gravity.y = 0;
             this.grounded = true;
-            this.lastGroundPos.copyFrom(this.mesh.position);
+            this.lastGroundPos.copyFrom(this.player.mesh.position);
         }
     }
 
@@ -146,14 +148,13 @@ class PlayerController extends GameObject{
         let angle = Math.atan2(this.input.horizontalAxis, this.input.verticalAxis);
         angle += this._camRoot.rotation.y;
         let targ = Quaternion.FromEulerAngles(0, angle, 0);
-        this.mesh.rotationQuaternion = Quaternion.Slerp(this.mesh.rotationQuaternion, targ, 10 * this.deltaTime);
+        this.player.mesh.rotationQuaternion = Quaternion.Slerp(this.player.mesh.rotationQuaternion, targ, 10 * this.deltaTime);
     }
 
     activatePlayerCamera(){
         this.beforeLoop= ()=>{
             this.beforeRenderUpdate();
             this.updateCamera()
-            // this.isGameOver();
         }
     }
 
@@ -188,15 +189,10 @@ class PlayerController extends GameObject{
     }
 
     updateCamera(){
-         let centerPlayer = this.mesh.position.y + 2;
-         this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.mesh.position.x, centerPlayer, this.mesh.position.z), 0.4);
+         let centerPlayer = this.player.mesh.position.y + 2;
+         this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x, centerPlayer, this.player.mesh.position.z), 0.4);
     }
 
-    // isGameOver(){
-    //     if(this.grounded){
-    //      console.log("gameover")
-    //     }
-    // }
 }
 
 export default PlayerController;

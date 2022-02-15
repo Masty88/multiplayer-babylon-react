@@ -20,16 +20,26 @@ const players={}
 
 io.on("connection",(socket)=>{
     console.log(`User connected ${socket.id}`);
-    socket.emit("GetId", {id: socket.id})
-    socket.on("signalSend",()=>{
-        console.log(`The server with id ${socket.id} send you a signal`)
+    socket.on("playerCreated",(data)=>{
+        console.log(`new Player Created with ${data.id}`)
+        players[data.id]=data;
+        socket.broadcast.emit("newPlayerCreated", data)
+
+        for(let key in players){
+            if(key === socket.id) continue;
+            socket.emit("newPlayerCreated", players[key])
+            console.log("another",players[key])
+        }
     })
-    socket.on("playerCreation",
-        (data) => {
-            console.log(`Player created with ${data.id}`)
-            players[data.id] = data;
-            socket.broadcast.emit("newPlayerCreated", data)
-        })
+    socket.on("disconnect",  (data)=> {
+        console.log('User Disconnect', socket.id)
+        delete (players[socket.id])
+    });
+
+    socket.on("playerMove",(data)=>{
+        players[data.id]= data;
+       socket.broadcast.emit("anotherPlayerMove",data)
+    })
 
 })
 

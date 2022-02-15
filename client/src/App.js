@@ -6,14 +6,15 @@ import StartScene from "./components/StartScene";
 import CutScene from "./components/CutScene";
 import GameScene from "./components/GameScene";
 import GameOverScene from "./components/GameOverScene";
+import {useEffect} from "react";
+import {useWebSocket, WebSocketProvider} from "./webSocketContext";
 
 
 
 function App() {
   const{value} = useSelector((state)=> state.gameState)
-    const dispatch = useDispatch()
     let scene;
-
+   const {isConnected, ws, err} = useWebSocket();
 
   switch (value){
     case 0:
@@ -32,10 +33,19 @@ function App() {
   }
 
   return (
-    <div className="App">
-        {scene}
-    </div>
+        <div className="App">
+          {scene}
+        </div>
   );
 }
 
-export default App;
+const AppContainer=()=>{
+    return(
+        <WebSocketProvider url="ws://localhost:4000">
+            <App/>
+        </WebSocketProvider>
+        )
+
+}
+
+export default AppContainer;
