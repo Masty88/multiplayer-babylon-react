@@ -32,7 +32,10 @@ class GameController {
     }
 
     handleSocket(scene,socket){
-console.log("handling socket")
+        console.log("handling socket")
+        socket.on("connection",()=>{
+            console.log("i'm connected")
+        })
         socket.on("newPlayerCreated",(data)=>{
             this.createPlayer(scene,socket,data)
         })
@@ -77,13 +80,13 @@ console.log("handling socket")
             if(data){
              this.players[data.id]= this.player;
              this.player.setState(data);
-
             }else{
               socket.emit("playerCreated", this.player.state);
+              this.input= new InputController(socket,this.player);
+              this.player.controller= new PlayerController(this.input,this.player);
+              this.player.controller.activatePlayerCamera();
             }
-            this.input= new InputController(socket,this.player);
-            this.player.controller= new PlayerController(this.input,this.player)
-            this.player.controller.activatePlayerCamera();
+
     }
 
     async initializeGameAsync(scene,socket){
