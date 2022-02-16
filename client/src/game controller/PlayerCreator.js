@@ -14,15 +14,13 @@ class PlayerCreator extends GameObject{
     constructor(shadowGenerator) {
         super();
         this.loadCharacterAssets(shadowGenerator)
-        console.log("creation")
     }
 
-    loadCharacterAssets(shadowGenerator,color){
+    loadCharacterAssets(shadowGenerator){
         this.mesh = MeshBuilder.CreateBox("outer", {width: 2, depth: 1, height: 3});
         this.mesh.isVisible = false;
         this.mesh.isPickable = false;
         this.mesh.checkCollisions = true;
-
 
         //move origin of box collider to the bottom of the mesh (to match player mesh)
         this.mesh.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0))
@@ -44,7 +42,7 @@ class PlayerCreator extends GameObject{
         box.position.z = 1;
 
         const body = Mesh.CreateCylinder("body", 3, 2, 2, 0, 0);
-        const bodymtl = new StandardMaterial("red");
+        const bodymtl = new StandardMaterial("red", this.scene);
         bodymtl.diffuseColor = new Color3.Red();
         body.material = bodymtl;
         body.isPickable = false;

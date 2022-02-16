@@ -26,45 +26,44 @@ class InputController extends GameObject{
     }
 
     updateFromKeyboard=()=>{
-        if (this.inputMap["ArrowUp"]) {
-            this.vertical = Scalar.Lerp(this.vertical, 1, 0.2);
-            this.verticalAxis = 1;
-            this.notifyServer= true;
-
-        } else if (this.inputMap["ArrowDown"]) {
-            this.vertical = Scalar.Lerp(this.vertical, -1, 0.2);
-            this.verticalAxis = -1;
-            this.notifyServer= true;
-        } else {
-            this.vertical = 0;
-            this.verticalAxis = 0;
-            this.notifyServer= false;
-        }
-
         if (this.inputMap["ArrowLeft"]) {
             this.horizontal = Scalar.Lerp(this.horizontal, -1, 0.2);
             this.horizontalAxis = -1;
-            this.notifyServer= true;
 
         } else if (this.inputMap["ArrowRight"]) {
             this.horizontal = Scalar.Lerp(this.horizontal, 1, 0.2);
             this.horizontalAxis = 1;
-            this.notifyServer= true;
         }
         else {
             this.horizontal = 0;
             this.horizontalAxis = 0;
+        }
+
+        if (this.inputMap["ArrowUp"]) {
+            this.vertical = Scalar.Lerp(this.vertical, 1, 0.2);
+            this.verticalAxis = 1;
+
+        } else if (this.inputMap["ArrowDown"]) {
+            this.vertical = Scalar.Lerp(this.vertical, -1, 0.2);
+            this.verticalAxis = -1;
+        } else {
+            this.vertical = 0;
+            this.verticalAxis = 0;
+        }
+
+        if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"] ){
+            this.notifyServer= true;
+        }else{
             this.notifyServer= false;
         }
+
         if(this.notifyServer){
+            console.log('position',this.player.mesh.position)
             this.player.state.x= this.player.mesh.position.x;
             this.player.state.y= this.player.mesh.position.y;
             this.player.state.z= this.player.mesh.position.z;
-            this.player.state.rX= this.player.mesh.rotation.x;
-            this.player.state.rY =this.player.mesh.rotation.y;
-            this.player.state.rZ= this.player.mesh.rotation.z;
             this.socket.emit("playerMove", this.player.state)
-            console.log(this.player.state)
+
         }
 
     }

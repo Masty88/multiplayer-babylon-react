@@ -125,6 +125,7 @@ class PlayerController extends GameObject{
 
         this.moveDirection = new Vector3((move).normalize().x, 0, (move).normalize().z);
 
+
         //clamp the input value so that diagonal movement isn't twice as fast
         let inputMag = Math.abs(this.h) + Math.abs(this.v);
         if (inputMag < 0) {
@@ -137,6 +138,7 @@ class PlayerController extends GameObject{
 
         //final movement that takes into consideration the inputs
         this.moveDirection = this.moveDirection.scaleInPlace(this._inputAmt * PlayerController.PLAYER_SPEED);
+
 
         //Rotations
         //check if there is movement to determine if rotation is needed

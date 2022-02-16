@@ -41,7 +41,6 @@ const StartScene= () => {
         //this handles interactions with the start button attached to the scene
         startBtn.onPointerDownObservable.add(() => {
             dispatch(changeState());
-            console.log("click")
             scene.detachControl(); //observables disabled
         });
         await scene.whenReadyAsync();
