@@ -30,7 +30,7 @@ class PlayerCreator extends GameObject{
         this.mesh.ellipsoidOffset = new Vector3(0, 1.5, 0);
 
         this.mesh.rotationQuaternion = new Quaternion(0, 1, 0, 0); // rotate the player mesh 180 since we want to see the back of the player
-        this.mesh.position= new Vector3(0,0,0)
+        // this.mesh.position= new Vector3(0,0,0)
 
         const box = MeshBuilder.CreateBox("Small1", {
             width: 0.5,

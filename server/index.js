@@ -38,7 +38,6 @@ io.on("connection",(socket)=>{
 
     socket.on("playerMove",(data)=>{
         players[data.id]= data;
-        console.log(data)
        socket.broadcast.emit("anotherPlayerMove",data)
     })
 

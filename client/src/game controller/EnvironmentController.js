@@ -6,8 +6,8 @@ class EnvironmentController extends GameObject{
         super();
     }
     async load(){
-        let ground = MeshBuilder.CreateBox("ground", {size:44})
-        ground.scaling = new Vector3(1,.02,1);
+        let ground = MeshBuilder.CreateBox("ground", {size:44}, this.scene)
+        ground.scaling = new Vector3(1,.01,1);
         ground.receiveShadows= true;
     }
 }

@@ -2,7 +2,10 @@ import GameObject from "./GameObject";
 import {ActionManager, ExecuteCodeAction, Scalar} from "@babylonjs/core";
 
 
+
 class InputController extends GameObject{
+
+
     constructor(socket, player) {
         super();
         this.scene.actionManager= new ActionManager(this.scene);
@@ -21,8 +24,13 @@ class InputController extends GameObject{
             this.updateFromKeyboard();
         })
 
+        // //jumping and dashing
+        // this.jumpKeyDown = false;
+        // this.dashing = false;
+
         this.socket= socket;
-        this.player= player
+        this.player= player;
+        console.log(this.player)
     }
 
     updateFromKeyboard=()=>{
@@ -51,9 +59,24 @@ class InputController extends GameObject{
             this.verticalAxis = 0;
         }
 
-        if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"] ){
+        //dash
+        if (this.inputMap["Shift"]) {
+            this.dashing = true;
+        } else {
+            this.dashing = false;
+        }
+
+        //Jump Checks (SPACE)
+        if (this.inputMap[" "]) {
+            this.jumpKeyDown = true;
+        } else {
+            this.jumpKeyDown = false;
+        }
+
+        if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
             this.notifyServer= true;
-        }else{
+        }
+        else{
             this.notifyServer= false;
         }
 

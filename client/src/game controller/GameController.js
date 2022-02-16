@@ -81,15 +81,13 @@ class GameController {
             }else{
               socket.emit("playerCreated", this.player.state);
               this.input= new InputController(socket,this.player);
-              this.player.controller= new PlayerController(this.input,this.player);
+              this.player.controller= new PlayerController(this.input,this.player,socket);
               this.player.controller.activatePlayerCamera();
             }
 
     }
 
     async initializeGameAsync(scene,socket){
-        let tempCamera= new FreeCamera('camera1', new Vector3(0, 5, -10), scene)
-        tempCamera.setTarget( Vector3.Zero())
         const light0 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
         light0.intensity=0.5;
         this.createPlayer(scene,socket)

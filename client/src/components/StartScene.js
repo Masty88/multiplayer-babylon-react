@@ -6,16 +6,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {changeState} from "../redux/gameState"; // uses above component in same directory
 
 
-
-
-
-
-/**
- * Will run on every frame render.  We are spinning the box on y-axis.
- */
-
-let box;
-
 const StartScene= () => {
      const dispatch= useDispatch();
 

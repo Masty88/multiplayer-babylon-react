@@ -19,95 +19,20 @@ class PlayerController extends GameObject{
 
     static PLAYER_SPEED= 0.45;
     static GRAVITY = -2.8;
-    static JUMP_FORCE = 0.8
+    static JUMP_FORCE = 0.8;
+    static DASH_FACTOR= 2.5;
+    static DASH_TIME = 10;
 
     gravity = new Vector3();
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
 
-    constructor(input,player) {
+    constructor(input,player,socket) {
         super();
         this.setupPlayerCamera();
-        // this.loadCharacterAssets(shadowGenerator,color)
+        this.isJumping = false;
         this.player= player
         this.input = input;
-    }
-
-    // loadCharacterAssets(shadowGenerator,color){
-    //     this.mesh = MeshBuilder.CreateBox("outer", {width: 2, depth: 1, height: 3});
-    //     this.mesh.isVisible = false;
-    //     this.mesh.isPickable = false;
-    //     this.mesh.checkCollisions = true;
-    //
-    //
-    //     //move origin of box collider to the bottom of the mesh (to match player mesh)
-    //     this.mesh.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0))
-    //
-    //     //for collisions
-    //     this.mesh.ellipsoid = new Vector3(1, 1.5, 1);
-    //     this.mesh.ellipsoidOffset = new Vector3(0, 1.5, 0);
-    //
-    //     this.mesh.rotationQuaternion = new Quaternion(0, 1, 0, 0); // rotate the player mesh 180 since we want to see the back of the player
-    //     this.mesh.position= new Vector3(0,0,0)
-    //
-    //     const box = MeshBuilder.CreateBox("Small1", {
-    //         width: 0.5,
-    //         depth: 0.5,
-    //         height: 0.25,
-    //         faceColors: [new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1), new Color4(0, 0, 0, 1)]
-    //     });
-    //     box.position.y = 0.5;
-    //     box.position.z = 1;
-    //
-    //     const body = Mesh.CreateCylinder("body", 3, 2, 2, 0, 0);
-    //     const bodymtl = new StandardMaterial("red");
-    //     bodymtl.diffuseColor = color;
-    //     body.material = bodymtl;
-    //     body.isPickable = false;
-    //     body.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0)); // simulates the imported mesh's origin
-    //
-    //     //parent the meshes
-    //     box.parent = body;
-    //     body.parent = this.mesh;
-    //     shadowGenerator.addShadowCaster(this.mesh); //the player mesh will cast shadows
-    // }
-
-
-    floorRayCast(offsetx, offsetz, raycastlen){
-        let raycastFloorPos = new Vector3(this.player.mesh.position.x + offsetx, this.player.mesh.position.y + 0.5, this.player.mesh.position.z + offsetz);
-        let ray = new Ray(raycastFloorPos, Vector3.Up().scale(-1), raycastlen);
-        let predicate = function (mesh) {
-            return mesh.isPickable && mesh.isEnabled();
-        }
-        let pick = this.scene.pickWithRay(ray, predicate);
-        if (pick.hit) {
-            return pick.pickedPoint;
-        } else {
-            return Vector3.Zero();
-        }
-    }
-
-    isGrounded(){
-        if(this.floorRayCast(0,0,0.6).equals(Vector3.Zero())){
-            return false
-        }else{
-            return true;
-        }
-    }
-
-    updateGroundDetection(){
-        if(!this.isGrounded()){
-            this.gravity= this.gravity.addInPlace(Vector3.Up().scale(this.deltaTime * PlayerController.GRAVITY));
-            this.grounded = false;
-        }
-        if (this.gravity.y < -PlayerController.JUMP_FORCE) {
-            this.gravity.y = -PlayerController.JUMP_FORCE;
-        }
-        this.player.mesh.moveWithCollisions(this.moveDirection.addInPlace(this.gravity));
-        if (this.isGrounded()) {
-            this.gravity.y = 0;
-            this.grounded = true;
-            this.lastGroundPos.copyFrom(this.player.mesh.position);
-        }
+        this.socket= socket;
     }
 
     updateFromControl(){
@@ -116,6 +41,7 @@ class PlayerController extends GameObject{
         this.h = this.input.horizontal; //x-axis
         this.v = this.input.vertical; //z-axis
 
+        //Movement based on Camera
         let fwd = this._camRoot.forward;
         let right = this._camRoot.right;
         let correctedVertical = fwd.scaleInPlace(this.v);
@@ -123,7 +49,7 @@ class PlayerController extends GameObject{
         //movement based off of camera's view
         let move = correctedHorizontal.addInPlace(correctedVertical);
 
-        this.moveDirection = new Vector3((move).normalize().x, 0, (move).normalize().z);
+        this.moveDirection = new Vector3(move.normalize().x, 0, move.normalize().z);
 
 
         //clamp the input value so that diagonal movement isn't twice as fast
@@ -153,16 +79,86 @@ class PlayerController extends GameObject{
         this.player.mesh.rotationQuaternion = Quaternion.Slerp(this.player.mesh.rotationQuaternion, targ, 10 * this.deltaTime);
     }
 
-    activatePlayerCamera(){
-        this.beforeLoop= ()=>{
-            this.beforeRenderUpdate();
-            this.updateCamera()
+    floorRayCast(offsetx, offsetz, raycastlen){
+        let raycastFloorPos = new Vector3(this.player.mesh.position.x + offsetx, this.player.mesh.position.y +0.1, this.player.mesh.position.z + offsetz);
+        let ray = new Ray(raycastFloorPos, Vector3.Up().scale(-1), raycastlen);
+        let predicate = function (mesh) {
+            return mesh.isPickable && mesh.isEnabled();
+        }
+        let pick = this.scene.pickWithRay(ray, predicate);
+        if (pick.hit) {
+            return pick.pickedPoint;
+        } else {
+            return Vector3.Zero();
+        }
+    }
+
+    isGrounded(){
+        if(this.floorRayCast(0,0,0.6).equals(Vector3.Zero())){
+            return false
+        }else{
+            return true;
+        }
+    }
+
+    updateGroundDetection(){
+        if(!this.isGrounded()){
+            this.gravity= this.gravity.addInPlace(Vector3.Up().scale(this.deltaTime * PlayerController.GRAVITY));
+            this.grounded = false;
+        }
+        if (this.gravity.y < -PlayerController.JUMP_FORCE) {
+            this.gravity.y = -PlayerController.JUMP_FORCE;
+        }
+
+        this.player.mesh.moveWithCollisions(this.moveDirection.addInPlace(this.gravity));
+
+        if (this.isGrounded()) {
+            this.gravity.y = 0;
+            this.grounded = true;
+            this.lastGroundPos.copyFrom(this.player.mesh.position);
+            this.jumpCount = 1;
+        }
+
+        //Jump detection
+        if(this.input.jumpKeyDown && this.jumpCount > 0) {
+            this.gravity.y = PlayerController.JUMP_FORCE;
+            this.jumpCount--;
+            this.isJumping= true;
+            this.notifyServer=true;
+            console.log(this.notifyServer)
+        }else {
+            this.isJumping= false
+        }
+
+
+
+        if(this.notifyServer){
+            this.player.state.x= this.player.mesh.position.x;
+            this.player.state.y= this.player.mesh.position.y;
+            this.player.state.z= this.player.mesh.position.z;
+            this.player.state.rW= this.player.mesh.rotationQuaternion.w;
+            this.player.state.rY= this.player.mesh.rotationQuaternion.y;
+            this.socket.emit("playerMove", this.player.state)
         }
     }
 
     beforeRenderUpdate(){
         this.updateFromControl()
         this.updateGroundDetection()
+    }
+
+    activatePlayerCamera(){
+        this.beforeLoop= ()=>{
+            this.beforeRenderUpdate();
+            this.updateCamera()
+        }
+
+        return this.camera;
+    }
+
+    updateCamera(){
+        let centerPlayer = this.player.mesh.position.y + 2;
+        this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x, centerPlayer, this.player.mesh.position.z), 0.4);
     }
 
     setupPlayerCamera() {
@@ -188,11 +184,6 @@ class PlayerController extends GameObject{
 
         this.scene.activeCamera = this.camera;
         return this.camera;
-    }
-
-    updateCamera(){
-         let centerPlayer = this.player.mesh.position.y + 2;
-         this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x, centerPlayer, this.player.mesh.position.z), 0.4);
     }
 
 }
