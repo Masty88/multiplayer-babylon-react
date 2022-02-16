@@ -45,7 +45,7 @@ class PlayerCreator extends GameObject{
 
         const body = Mesh.CreateCylinder("body", 3, 2, 2, 0, 0);
         const bodymtl = new StandardMaterial("red");
-        bodymtl.diffuseColor = new Color3.Red;
+        bodymtl.diffuseColor = new Color3.Red();
         body.material = bodymtl;
         body.isPickable = false;
         body.bakeTransformIntoVertices(Matrix.Translation(0, 1.5, 0)); // simulates the imported mesh's origin

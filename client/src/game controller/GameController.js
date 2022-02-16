@@ -27,10 +27,12 @@ class GameController {
         this.game={}
         this.gameOver= false;
         this.players={};
+        this.handleSocket(scene,socket)
         this.setUpGame().then(r => this.initializeGameAsync(scene,socket))
     }
 
     handleSocket(scene,socket){
+console.log("handling socket")
         socket.on("newPlayerCreated",(data)=>{
             this.createPlayer(scene,socket,data)
         })
@@ -38,12 +40,6 @@ class GameController {
             this.player=this.players[data.id];
             this.player.setState(data)
         })
-        return()=>{
-            socket.off("newPlayerCreated",(data)=>{
-                console.log("off")
-                this.createPlayer(scene,socket,data)
-            })
-        }
     }
     async setUpGame(){
         const environment= new EnvironmentController()
@@ -71,7 +67,7 @@ class GameController {
                 rZ: this.player.mesh.rotation.z,
             }
             this.player.setState=(data)=>{
-                this.player.mesh.position.x = data.x + 5;
+                this.player.mesh.position.x = data.x;
                 this.player.mesh.position.y = data.y;
                 this.player.mesh.position.z = data.z;
                 this.player.mesh.rotation.x = data.rX;
@@ -80,25 +76,22 @@ class GameController {
             }
             if(data){
              this.players[data.id]= this.player;
-             this.player.setState(data)
+             this.player.setState(data);
 
             }else{
-                socket.emit("playerCreated", this.player.state);
+              socket.emit("playerCreated", this.player.state);
             }
-             this.input= new InputController(socket,this.player);
+            this.input= new InputController(socket,this.player);
             this.player.controller= new PlayerController(this.input,this.player)
-            this.player.controller.activatePlayerCamera()
+            this.player.controller.activatePlayerCamera();
     }
 
     async initializeGameAsync(scene,socket){
-        //temporary light to light the entire scene
-        console.log(socket.id)
         let tempCamera= new FreeCamera('camera1', new Vector3(0, 5, -10), scene)
         tempCamera.setTarget( Vector3.Zero())
         const light0 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
         light0.intensity=0.5;
         this.createPlayer(scene,socket)
-        this.handleSocket(scene,socket)
     }
 }
 
