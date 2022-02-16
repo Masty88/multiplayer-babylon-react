@@ -65,11 +65,15 @@ class GameController {
                 x: this.player.mesh.position.x,
                 y: this.player.mesh.position.y,
                 z: this.player.mesh.position.z,
+                rW: this.player.mesh.rotationQuaternion.w,
+                rY: this.player.mesh.rotationQuaternion.y
             }
             this.player.setState=(data)=>{
                 this.player.mesh.position.x = data.x;
                 this.player.mesh.position.y = data.y;
                 this.player.mesh.position.z = data.z;
+                this.player.mesh.rotationQuaternion.w= data.rW;
+                this.player.mesh.rotationQuaternion.y= data.rY;
             }
             if(data){
              this.players[data.id]= this.player;

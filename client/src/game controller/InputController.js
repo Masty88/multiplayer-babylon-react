@@ -58,12 +58,12 @@ class InputController extends GameObject{
         }
 
         if(this.notifyServer){
-            console.log('position',this.player.mesh.position)
             this.player.state.x= this.player.mesh.position.x;
             this.player.state.y= this.player.mesh.position.y;
             this.player.state.z= this.player.mesh.position.z;
+            this.player.state.rW= this.player.mesh.rotationQuaternion.w;
+            this.player.state.rY= this.player.mesh.rotationQuaternion.y;
             this.socket.emit("playerMove", this.player.state)
-
         }
 
     }
