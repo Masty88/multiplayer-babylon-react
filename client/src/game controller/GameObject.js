@@ -3,10 +3,12 @@ import {TransformNode} from "@babylonjs/core";
 class GameObject {
     static GameController;
     static Scene;
+    static Socket
 
     constructor() {
         this.gameController = GameObject.GameController;
         this.scene = GameObject.Scene;
+        this.socket= GameObject.Socket
 
         const beforeLoop = () => this.beforeLoop();
         this.scene.registerBeforeRender(beforeLoop);
@@ -31,6 +33,7 @@ class GameObject {
         if (this.unsubscribeStore)
             this.unsubscribeStore();
     }
+
 }
 
 export default GameObject;

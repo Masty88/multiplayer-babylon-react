@@ -19,16 +19,21 @@ import PlayerCreator from "./PlayerCreator";
 
 
 class GameController {
-    constructor(scene,socket) {
+    constructor(scene,socket,engine) {
         // Initialization
         GameObject.GameController = this;
         GameObject.Scene = scene;
-        this.scene = scene;
-        this.game={}
+        GameObject.Socket= socket
+        this.engine = engine
         this.gameOver= false;
         this.players={};
         this.handleSocket(scene,socket)
-        this.setUpGame().then(r => this.initializeGameAsync(scene,socket))
+        this.setUpGame(scene,socket)
+        // this.setUpGame(scene).then(r => this.initializeGameAsync(scene,socket))
+    }
+
+    async main(){
+
     }
 
     handleSocket(scene,socket){
@@ -44,10 +49,14 @@ class GameController {
             this.player.setState(data)
         })
     }
-    async setUpGame(){
-        const environment= new EnvironmentController()
+
+
+
+    async setUpGame(scene,socket){
+        const environment= new EnvironmentController(scene)
         this.environment= environment;
         await this.environment.load()
+        await this.initializeGameAsync(scene,socket)
     }
 
     createPlayer(scene,socket,data){

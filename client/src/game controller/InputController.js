@@ -28,7 +28,6 @@ class InputController extends GameObject{
         // this.jumpKeyDown = false;
         // this.dashing = false;
 
-        this.socket= socket;
         this.player= player;
         console.log(this.player)
     }

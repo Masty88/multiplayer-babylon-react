@@ -14,7 +14,7 @@ import {useWebSocket, WebSocketProvider} from "./webSocketContext";
 function App() {
   const{value} = useSelector((state)=> state.gameState)
     let scene;
-   const {isConnected, ws, err} = useWebSocket();
+ // test>
 
   switch (value){
     case 0:

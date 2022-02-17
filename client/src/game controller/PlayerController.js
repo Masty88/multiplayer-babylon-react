@@ -26,13 +26,13 @@ class PlayerController extends GameObject{
     gravity = new Vector3();
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
 
-    constructor(input,player,socket) {
+    constructor(input,player) {
         super();
         this.setupPlayerCamera();
         this.isJumping = false;
         this.player= player
         this.input = input;
-        this.socket= socket;
+
     }
 
     updateFromControl(){
@@ -117,6 +117,7 @@ class PlayerController extends GameObject{
             this.grounded = true;
             this.lastGroundPos.copyFrom(this.player.mesh.position);
             this.jumpCount = 1;
+            this.isJumping=false
         }
 
         //Jump detection
@@ -124,15 +125,9 @@ class PlayerController extends GameObject{
             this.gravity.y = PlayerController.JUMP_FORCE;
             this.jumpCount--;
             this.isJumping= true;
-            this.notifyServer=true;
-            console.log(this.notifyServer)
-        }else {
-            this.isJumping= false
         }
 
-
-
-        if(this.notifyServer){
+        if(this.isJumping){
             this.player.state.x= this.player.mesh.position.x;
             this.player.state.y= this.player.mesh.position.y;
             this.player.state.z= this.player.mesh.position.z;
