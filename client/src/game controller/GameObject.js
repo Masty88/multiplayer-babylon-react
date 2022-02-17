@@ -4,11 +4,13 @@ class GameObject {
     static GameController;
     static Scene;
     static Socket
+    static Engine;
 
     constructor() {
         this.gameController = GameObject.GameController;
         this.scene = GameObject.Scene;
-        this.socket= GameObject.Socket
+        this.socket= GameObject.Socket;
+        this.engine= GameObject.Engine;
 
         const beforeLoop = () => this.beforeLoop();
         this.scene.registerBeforeRender(beforeLoop);

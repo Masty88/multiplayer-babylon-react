@@ -21,8 +21,8 @@ function App() {
       scene=<StartScene/>
           break;
     case 1:
-      scene=<CutScene/>
-          break;
+        scene=<GameScene/>
+        break;
     case 2:
       scene=<GameScene/>
           break;
@@ -34,7 +34,7 @@ function App() {
 
   return (
         <div className="App">
-          {scene}
+            {scene}
         </div>
   );
 }

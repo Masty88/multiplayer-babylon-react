@@ -10,21 +10,20 @@ import {useWebSocket, WebSocketProvider} from "../webSocketContext"; // uses abo
 const GameScene= () => {
     const dispatch= useDispatch();
     const {isConnected, ws, err} = useWebSocket();
+    const{value} = useSelector((state)=> state.gameState)
     const onSceneReady = async (scene,engine) => {
-            engine.displayLoadingUI();
-            let game = new GameController(scene, ws);
-            await scene.whenReadyAsync();
-            engine.hideLoadingUI();
-            if(game.gameOver){
-                console.log("gameover")
-                dispatch(changeState());
-            }
+        let game = new GameController(scene, ws, engine, value, dispatch, changeState());
+    };
 
+    const onRender = (scene) => {
+        console.log(value)
+        // let game = new GameController();
+        // console.log(game.changeScene) y f nnnnnnrrnn
     };
 
     return (
         <>
-            <SceneComponent antialias onSceneReady={onSceneReady} id="my-canvas"/>
+            <SceneComponent antialias onSceneReady={onSceneReady} onRender={onRender} id="my-canvas"/>
         </>
 
     )

@@ -20,6 +20,7 @@ export default (props) => {
 
             //STATE MACHINE
                 engine.runRenderLoop(async () => {
+
                     // await dispatch(changeState());
                     switch (value){
                         case 0:
@@ -28,12 +29,6 @@ export default (props) => {
                         case 1:
                             scene.render();
                             break;
-                        case 2:
-                           scene.render();
-                            break;
-                        case 3:
-                            scene.render()
-                        default: break;
                     }
                 });
              // }

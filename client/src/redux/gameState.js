@@ -8,6 +8,7 @@ export const gameStateSlice= createSlice({
     reducers:{
         changeState: (state)=>{
             state.value +=1
+            console.log("i dispacth")
         }
     }
 })
