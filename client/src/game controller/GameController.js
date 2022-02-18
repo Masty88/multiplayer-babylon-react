@@ -2,7 +2,6 @@ import GameObject from "./GameObject";
 import EnvironmentController from "./EnvironmentController";
 import PlayerController from "./PlayerController";
 import {
-
     Color3,
     Color4, FreeCamera,
     HemisphericLight,
@@ -31,20 +30,15 @@ class GameController {
         this.dispatch= dispatch;
         this.engine= engine
         this.value= value;
-        this.changeScene = 0;
         this.players={};
-        // this.handleSocket(scene,socket)
+
         this.handleScene(scene,socket)
-        // this.setUpGame(scene,socket)
-        // this.setUpGame(scene).then(r => this.initializeGameAsync(scene,socket))
+
     }
 
 
     handleSocket(scene,socket){
-        console.log("handling socket")
-        socket.on("connection",()=>{
-            console.log("i'm connected")
-        })
+
         socket.on("newPlayerCreated",(data)=>{
             this.createPlayer(scene,socket,data)
         })
@@ -59,7 +53,9 @@ class GameController {
           this.goToStart(scene,socket)
         }
         if(this.value=== 1 ){
-            this.goToCutScene(scene,socket)
+            this.handleSocket(scene,socket)
+            this.goToCutScene(scene,socket,socket)
+            console.log(socket.id)
         }if(this.value===2){
             console.log("scene2")
         }

@@ -19,19 +19,10 @@ export default (props) => {
 
 
             //STATE MACHINE
-                engine.runRenderLoop(async () => {
-
-                    // await dispatch(changeState());
-                    switch (value){
-                        case 0:
-                            scene.render()
-                            break;
-                        case 1:
-                            scene.render();
-                            break;
-                    }
+                engine.runRenderLoop(() => {
+                 scene.render()
                 });
-             // }
+
 
             const resize = () => {
                 scene.getEngine().resize();
