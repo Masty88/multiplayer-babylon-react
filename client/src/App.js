@@ -1,51 +1,40 @@
-import './App.css';
-import {useDispatch, useSelector} from "react-redux";
-import {changeState} from "./redux/gameState";
-import GoToStart from "./components/StartScene";
-import StartScene from "./components/StartScene";
-import CutScene from "./components/CutScene";
-import GameScene from "./components/GameScene";
-import GameOverScene from "./components/GameOverScene";
-import {useEffect} from "react";
-import {useWebSocket, WebSocketProvider} from "./webSocketContext";
+import { useState} from "react";
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
+import Login from "./components/pages/Login";
+import Landing from "./components/pages/Landing";
+import Register from "./components/pages/Register";
+import Error404 from "./components/pages/Error404";
+import {useSelector} from "react-redux";
+import MainMenu from "./components/pages/MainMenu";
+import Layout from "./components/layout/Layout";
 
 
+const App= ()=>{
 
-function App() {
-  const{value} = useSelector((state)=> state.gameState)
-    let scene;
- // test>
+    const{ user}= useSelector((state)=>
+        state.auth)
 
-  switch (value){
-    case 0:
-      scene=<StartScene/>
-          break;
-    case 1:
-        scene=<GameScene/>
-        break;
-    case 2:
-      scene=<GameScene/>
-          break;
-    case 3:
-      scene=<GameOverScene/>
-    default:break;
-
-  }
-
-  return (
-        <div className="App">
-            {scene}
-        </div>
-  );
-}
-
-const AppContainer=()=>{
     return(
-        <WebSocketProvider url="ws://localhost:4000">
-            <App/>
-        </WebSocketProvider>
-        )
-
+        <>
+            <Routes>
+                <Route path='/' element={user? <MainMenu/> : <Landing/>} />
+                <Route path='/login' element={<Login/>} />
+                <Route path='/register' element={<Register/>} />
+            </Routes>
+            <ToastContainer />
+        </>
+    );
 }
+
+const AppContainer=()=>(
+    <Router>
+        <Layout>
+            <App/>
+        </Layout>
+    </Router>
+    )
+
 
 export default AppContainer;
