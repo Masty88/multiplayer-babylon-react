@@ -69,7 +69,7 @@ const Layout = ({children})=>{
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Container sx={{flexGrow: 1}}>
+            <Container sx={{flexGrow: 1, minHeight: "90vh",display:"flex", justifyContent:"center", alignItems: "center"}}>
              {children}
              </Container>
            </>

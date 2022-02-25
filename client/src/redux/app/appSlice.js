@@ -12,5 +12,5 @@ const appSlice = createSlice({
     }
 });
 
-export const {toggleLoading, setUser} = appSlice.actions;
+export const {toggleLoading} = appSlice.actions;
 export default appSlice.reducer;

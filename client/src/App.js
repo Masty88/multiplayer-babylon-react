@@ -13,7 +13,6 @@ import {useSelector} from "react-redux";
 
 const App= ()=>{
     const { loading} = useSelector(state => state.app);
-    console.log(loading)
     return(
         <>
             <Routes>
