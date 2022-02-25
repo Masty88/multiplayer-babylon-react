@@ -8,23 +8,40 @@ import Typography from "@mui/material/Typography";
 import InputIcon from '@mui/icons-material/Input';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { logout, reset } from "../../redux/authSlice";
+import { logout, reset } from "../../redux/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {Link} from "react-router-dom";
+import {CssBaseline} from "@mui/material";
+import React, {useEffect} from "react";
+import {resetProfile} from "../../redux/profile/profileSlice";
+import {toggleLoading} from "../../redux/app/appSlice";
+import Loading from "./Loading";
+import useLoading from "../../hooks/useLoading";
 
 const Layout = ({children})=>{
     const navigate = useNavigate();
     const dispatch= useDispatch();
+
     const {user}= useSelector((state)=>
         state.auth
     );
+
+    const {loading}= useSelector(state=>state.app);
+
     const onLogout = () => {
         dispatch(logout())
         dispatch(reset())
+        dispatch(resetProfile())
         navigate('/')
     }
+
+    useLoading()
+
+    if(loading)return <Loading active={loading}/>
+
     return(
         <>
+            <CssBaseline />
             <AppBar position="static">
                 <Toolbar sx={{
                     display: 'flex', justifyContent: 'space-between', alignItems: ' center' }}>
@@ -35,14 +52,19 @@ const Layout = ({children})=>{
                             <LogoutIcon/>
                             </IconButton>)
                             : (
-                             <IconButton>
-                                <Link to='/login'>
-                                    <InputIcon sx={{ color: "white", marginRight: "15px" }}/>
-                                </Link>
-                                 <Link to='/register'>
-                                     <PersonAddAltIcon sx={{ color: "white" }}/>
-                                 </Link>
-                             </IconButton>
+                                <>
+                                    <IconButton>
+                                        <Link to='/login'>
+                                            <InputIcon sx={{ color: "white", marginRight: "15px" }}/>
+                                        </Link>
+                                    </IconButton>
+                                    <IconButton>
+                                        <Link to='/register'>
+                                            <PersonAddAltIcon sx={{ color: "white" }}/>
+                                        </Link>
+                                    </IconButton>
+                                </>
+
                             )}
                     </Box>
                 </Toolbar>

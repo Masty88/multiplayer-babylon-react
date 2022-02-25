@@ -7,18 +7,16 @@ import {Avatar, Box, Container, createTheme, CssBaseline, Grid} from "@mui/mater
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {register, reset} from "../../redux/authSlice";
+import {login, reset} from "../../redux/auth/authSlice";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import {toggleLoading} from "../../redux/app/appSlice";
+import Loading from "../layout/Loading";
 
 
 
 const Login = () => {
-    const[username,setUsername]= useState("");
     const[password, setPassword]= useState("");
-    const[password2, setPassword2]= useState("");
     const[email, setEmail]= useState("");
-
-    const theme = createTheme();
 
     const navigate= useNavigate();
     const dispatch= useDispatch();
@@ -31,30 +29,25 @@ const Login = () => {
             toast.error(message)
         }
 
-        if (isSuccess) {
-            navigate('/')
+        if (isSuccess || user) {
+            navigate('/menu')
         }
 
         dispatch(reset())
     }, [user, isError, isSuccess, message, navigate, dispatch])
 
+
     const handleSubmit=(e)=>{
         e.preventDefault();
-        if (password !== password2) {
-            toast.error('Password do not match')
-        }else{
-            const userData={
-                username,
+        const userData={
                 email,
                 password
             }
-            dispatch(register(userData))
-        }
+        dispatch(login({user:userData}))
     }
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline />
                 <Box
                     sx={{
                         marginTop: 8,

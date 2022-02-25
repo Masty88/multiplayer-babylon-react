@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import {useNavigate} from 'react-router-dom'
 import { toast } from "react-toastify";
-import{ register, reset } from "../../redux/authSlice";
+import{ register, reset } from "../../redux/auth/authSlice";
 
 import Paper from "@mui/material/Paper";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import {Avatar, Box, Button, Container, createTheme, CssBaseline, Grid} from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {ThemeProvider} from "@emotion/react";
+import Loading from "../layout/Loading";
 
 
 
@@ -33,8 +34,8 @@ const Register = () => {
             toast.error(message)
         }
 
-        if (isSuccess) {
-            navigate('/')
+        if (isSuccess || user) {
+            navigate('/main')
         }
 
         dispatch(reset())
@@ -50,13 +51,16 @@ const Register = () => {
                 email,
                 password
             }
-            dispatch(register(userData))
+            dispatch(register({user:userData}))
         }
+    }
+
+    if(isLoading){
+        return <Loading/>
     }
 
     return (
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
                 <Box
                     sx={{
                         marginTop: 8,

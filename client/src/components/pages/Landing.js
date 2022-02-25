@@ -1,25 +1,36 @@
-import React from 'react';
-import {makeStyles} from "@mui/styles";
-import AppBar from "@mui/material/AppBar";
-import {Box, Button, Grid} from "@mui/material";
-import Paper from "@mui/material/Paper";
-
-const useStyle= makeStyles((theme)=>({
-   appbar:{
-       background: 'none'
-   },
-   appbarTitle:{
-       flexGrow: '1'
-   }
-}))
-
-
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {toast} from "react-toastify";
+import {reset} from "../../redux/auth/authSlice";
+import {toggleLoading} from "../../redux/app/appSlice";
+import Loading from "../layout/Loading";
+import useLoading from "../../hooks/useLoading";
 
 const Landing = () => {
-    const classes = useStyle()
+    const navigate= useNavigate();
+    const dispatch= useDispatch();
+
+    const{ user, isError, isSuccess, message }= useSelector((state)=>
+        state.auth)
+
+    useEffect(() => {
+        if (isError) {
+            toast.error(message)
+        }
+        if (isSuccess || user) {
+            navigate('/menu')
+        }
+        dispatch(reset())
+    }, [user, isError, isSuccess, message, navigate, dispatch])
+
+
     return (
-        <div>
-        </div>
+        <>
+            <div>
+                Welcome to Meta-verse
+            </div>
+        </>
     );
 };
 

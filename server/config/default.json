@@ -1,4 +1,0 @@
-{
-  "mongoURI": "mongodb+srv://emvisuel:1234@node.6ngoi.mongodb.net/Metaverse?retryWrites=true&w=majority",
-  "jwtSecret": "mysecret"
-}
