@@ -98,52 +98,6 @@ const CreateProfile = (props) => {
                     </Grid>
                 </Box>
         </Container>
-
-    // const [avatar, setAvatar]= useState(null)
-    // const disableButton = () =>{
-    //     if(!avatar){
-    //         return true; // this disables the button
-    //     }else {
-    //         return  false; // this disables the button
-    //     }
-    // }
-    // return (
-    //     <>
-    //         <Container sx={{ py: 8 }} maxWidth="md">
-    //             {/* End hero unit */}
-    //             <Grid container spacing={4}>
-    //                     <Grid item  xs={12}  md={4}>
-    //                         <Card
-    //                             sx={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}
-    //                             onClick={()=>setAvatar(true)}
-    //                         >
-    //                             <CardMedia
-    //                                 component="img"
-    //                                 image="https://source.unsplash.com/random"
-    //                                 alt="random"
-    //                             />
-    //                             <CardContent sx={{ flexGrow: 1 }}>
-    //                                 <Typography gutterBottom variant="h5" component="h2">
-    //                                     Heading
-    //                                 </Typography>
-    //                                 <Typography>
-    //                                     This is a media card. You can use this section to describe the
-    //                                     content.
-    //                                 </Typography>
-    //                             </CardContent>
-    //                             <CardActions>
-    //                                 <Button size="small">Choose</Button>
-    //                             </CardActions>
-    //                         </Card>
-    //                     </Grid>
-    //             </Grid>
-    //             <Button size="small"
-    //                     variant="contained"
-    //                     disabled={avatar == null}
-    //                     onClick={() =>console.log("you choose")}
-    //             >GO TO GAME</Button>
-    //         </Container>
-    //     </>>
     );
 };
 
