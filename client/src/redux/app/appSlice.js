@@ -6,8 +6,9 @@ const appSlice = createSlice({
         loading: true,
     },
     reducers:{
-        toggleLoading:(state, action) =>{
-            state.loading = action.payload
+        toggleLoading:(state,action) =>{
+            state.loading = !state.loading
+            console.log(state.loading)
         },
     }
 });

@@ -14,13 +14,15 @@ const MainMenu = () => {
         state.profile)
     const {user}=useSelector((state)=>
         state.auth)
+    const {loading}= useSelector((state)=>
+    state.app)
 
     useEffect(()=>{
       dispatch(getProfile({}))
         if(!user)navigate('/')
     },[user])
 
-    if(isLoading) return <Loading active={isLoading}/>
+    if(loading || isLoading) return <Loading/>
 
     return (
         <>

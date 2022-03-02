@@ -2,7 +2,9 @@ import React, {useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toggleLoading} from "../../redux/app/appSlice";
+import StartTown from "../gameComponents/StartTown";
 
+let city
 
 const Game = () => {
     const navigate= useNavigate();
@@ -11,8 +13,16 @@ const Game = () => {
     const{ user }= useSelector((state)=>
         state.auth)
 
-    const{profile}= useSelector((state)=>
-        state.profile)
+    const {value}= useSelector((state)=>
+        state.game
+    )
+
+    switch (value){
+        case "START_CITY":
+            city=<StartTown/>
+            break;
+        default: break;
+    }
 
     useEffect(()=>{
         if(!user){
@@ -22,11 +32,7 @@ const Game = () => {
 
     return (
         <>
-            {user&&
-                (<div>
-                    You are gaming {user.user.username} with your {profile.mesh}
-                </div>)
-            }
+            {city}
         </>
     );
 };

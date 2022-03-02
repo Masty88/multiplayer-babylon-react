@@ -9,24 +9,23 @@ import InputIcon from '@mui/icons-material/Input';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { logout, reset } from "../../redux/auth/authSlice";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {Link} from "react-router-dom";
 import {CssBaseline} from "@mui/material";
 import React, {useEffect} from "react";
 import {resetProfile} from "../../redux/profile/profileSlice";
 import {toggleLoading} from "../../redux/app/appSlice";
 import Loading from "./Loading";
-import useLoading from "../../hooks/useLoading";
+
 
 const Layout = ({children})=>{
     const navigate = useNavigate();
     const dispatch= useDispatch();
+    const location= useLocation()
 
     const {user}= useSelector((state)=>
         state.auth
     );
-
-    const {loading}= useSelector(state=>state.app);
 
     const onLogout = () => {
         dispatch(logout())
@@ -34,10 +33,6 @@ const Layout = ({children})=>{
         dispatch(resetProfile())
         navigate('/')
     }
-
-    useLoading()
-
-    if(loading)return <Loading active={loading}/>
 
     return(
         <>

@@ -23,6 +23,19 @@ const login = async (userData)=>{
     return response.data
 }
 
+//Login user
+const authenticate = async (token)=>{
+    const config = {
+        headers: {
+            'x-auth-token': token,
+        },
+    }
+
+    const response= await axios.get(API_URL_AUTH, config);
+    return response.data
+}
+
+
 //Logout user
 const logout=()=>{
     localStorage.removeItem('user')
@@ -31,7 +44,8 @@ const logout=()=>{
 const authService={
     register,
     logout,
-    login
+    login,
+    authenticate
 }
 
 export  default authService;

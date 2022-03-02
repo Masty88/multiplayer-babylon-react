@@ -8,11 +8,20 @@ import Register from "./components/pages/Register";
 import MainMenu from "./components/pages/MainMenu";
 import Layout from "./components/layout/Layout";
 import Error404 from "./components/pages/Error404";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {authenticate} from "./redux/auth/authSlice";
+import {WebSocketProvider} from "./WebSocketProvider";
 
 
 const App= ()=>{
-    const { loading} = useSelector(state => state.app);
+    const dispatch=useDispatch();
+
+    useEffect(() => {
+        dispatch(authenticate({}));
+        console.log("auth")
+    }, []);
+    console.log(JSON.parse(localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN))['token'])
+
     return(
         <>
             <Routes>
@@ -28,11 +37,17 @@ const App= ()=>{
 }
 
 const AppContainer=()=>(
-    <Router>
-        <Layout>
-            <App/>
-        </Layout>
-    </Router>
+    <WebSocketProvider
+        url={process.env.REACT_APP_API_URL}
+        token={JSON.parse(localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN))['token']}
+    >
+        <Router>
+            <Layout>
+                <App/>
+            </Layout>
+        </Router>
+    </WebSocketProvider>
+
     )
 
 

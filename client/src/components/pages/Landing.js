@@ -3,9 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {reset} from "../../redux/auth/authSlice";
-import {toggleLoading} from "../../redux/app/appSlice";
-import Loading from "../layout/Loading";
-import useLoading from "../../hooks/useLoading";
+
 
 const Landing = () => {
     const navigate= useNavigate();

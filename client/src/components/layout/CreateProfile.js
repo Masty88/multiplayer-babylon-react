@@ -10,17 +10,15 @@ import {
     createTheme,
     Grid,
 } from "@mui/material";
-import {makeStyles} from "@mui/styles";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-
 import LoadingButton from "@mui/lab/LoadingButton";
 import {createProfile, resetProfile} from "../../redux/profile/profileSlice";
 import CardPlayer from "./CardPlayer";
-import {toggleSelected} from "../../redux/app/appSlice";
+
 
 const cards=[
     {
