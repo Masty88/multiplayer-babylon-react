@@ -1,4 +1,4 @@
-import {Box, LinearProgress} from "@mui/material";
+import {Box, CircularProgress, LinearProgress} from "@mui/material";
 
 
 const Loading = () => (
@@ -8,11 +8,11 @@ const Loading = () => (
         display:'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background:'rgba(0,0,0,0.4)',
+        background:'rgb(0,0,0)',
         backdropFilter: 'blur(10px)',
         transition: 'opacity 0.2s ease-in-out'}}
     >
-        <LinearProgress sx={{width:320}}/>
+        <CircularProgress sx={{width:320}}/>
     </Box>
 );
 

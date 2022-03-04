@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toggleLoading} from "../../redux/app/appSlice";
 import StartTown from "../gameComponents/StartTown";
+import StartScene from "../gameComponents/StartScene";
 
 let city
 
@@ -16,19 +17,29 @@ const Game = () => {
     const {value}= useSelector((state)=>
         state.game
     )
+    const{gaming}= useSelector((state)=>state.app)
 
     switch (value){
+        case "GO_TO_START":
+            city=<StartScene/>
+            break;
         case "START_CITY":
             city=<StartTown/>
             break;
         default: break;
     }
 
+    console.log(value)
+
     useEffect(()=>{
         if(!user){
             navigate('/')
         }
-    },[user])
+        if(!gaming){
+            navigate('/')
+        }
+        console.log("here")
+    },[])
 
     return (
         <>

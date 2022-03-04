@@ -33,21 +33,20 @@ const io = new Server(httpServer,{
     }
 })
 
-io.use(async (socket, next) => {
-    try {
-        const { token } = socket.handshake.auth;
-        console.log(token)
-        const {id} = await jwt.verify(token, process.env.JWT_SECRET );
-        const user = await User.findOne({ id });
-        socket.user= user
-        console.log(socket.user)
-        next();
-    }
-    catch(err) {
-        console.log(err)
-        next(new Error('Not authenticated'));
-    }
-});
+// io.use(async (socket, next) => {
+//     try {
+//         const { token } = socket.handshake.auth;
+//         console.log(token)
+//         const {id} = await jwt.verify(token, process.env.JWT_SECRET );
+//         const user = await User.findOne({ id });
+//         socket.user= user
+//         next();
+//     }
+//     catch(err) {
+//         console.log(err)
+//         next(new Error('Not authenticated'));
+//     }
+// });
 io.on('connect', socket => {
     console.log('connected');
 });

@@ -5,7 +5,7 @@ import {getProfile} from "../../redux/profile/profileSlice";
 import {useNavigate} from "react-router-dom";
 import Loading from "../layout/Loading";
 import Game from "./Game";
-import {toggleLoading} from "../../redux/app/appSlice";
+import {toggleGaming, toggleLoading} from "../../redux/app/appSlice";
 
 const MainMenu = () => {
     const dispatch= useDispatch()
@@ -20,13 +20,17 @@ const MainMenu = () => {
     useEffect(()=>{
       dispatch(getProfile({}))
         if(!user)navigate('/')
-    },[user])
+        if(profile){
+         dispatch(toggleGaming(true));
+         navigate('/game')
+        }
+    },[user,profile])
 
-    if(loading || isLoading) return <Loading/>
+    if(isLoading) return <Loading/>
 
     return (
         <>
-            {profile? (<Game/>): (<CreateProfile/>)}
+            <CreateProfile/>
         </>
     );
 };

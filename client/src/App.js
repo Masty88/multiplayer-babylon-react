@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes, useNavigate} from 'react-router-dom'
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import Login from "./components/pages/Login";
@@ -11,40 +11,54 @@ import Error404 from "./components/pages/Error404";
 import {useDispatch, useSelector} from "react-redux";
 import {authenticate} from "./redux/auth/authSlice";
 import {WebSocketProvider} from "./WebSocketProvider";
+import Game from "./components/pages/Game";
+
 
 
 const App= ()=>{
     const dispatch=useDispatch();
+    const navigate= useNavigate()
+    const{gaming}= useSelector((state)=>state.app)
+    const{ user }= useSelector((state)=>
+        state.auth)
+    const{ profile }= useSelector((state)=>
+        state.profile)
 
     useEffect(() => {
         dispatch(authenticate({}));
-        console.log("auth")
+        if(user){
+            navigate('/menu')
+        }
     }, []);
-    console.log(JSON.parse(localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN))['token'])
 
     return(
         <>
-            <Routes>
-                <Route path='/' element={<Landing/>} />
-                <Route path='/login' element={<Login/>} />
-                <Route path='/register' element={<Register/>} />
-                <Route path='/menu' element={<MainMenu/>} />
-                <Route path="*" element={<Error404/>} />
-            </Routes>
-            <ToastContainer />
+            {!gaming?(
+                    <Layout>
+                        <Routes>
+                            <Route path='/' element={<Landing/>} />
+                            <Route path='/login' element={<Login/>} />
+                            <Route path='/register' element={<Register/>} />
+                            <Route path='/menu' element={<MainMenu/>} />
+                            <Route path="*" element={<Error404/>} />
+                        </Routes>
+                        <ToastContainer />
+                    </Layout>
+                ):(
+                <Routes>
+                    <Route path='/game' element={<Game/>} />
+                </Routes>
+                )
+            }
         </>
     );
 }
 
 const AppContainer=()=>(
     <WebSocketProvider
-        url={process.env.REACT_APP_API_URL}
-        token={JSON.parse(localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN))['token']}
-    >
+        url={process.env.REACT_APP_API_URL}>
         <Router>
-            <Layout>
                 <App/>
-            </Layout>
         </Router>
     </WebSocketProvider>
 

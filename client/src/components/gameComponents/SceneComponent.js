@@ -1,11 +1,13 @@
 import {Engine, Scene, Vector3} from "@babylonjs/core";
 import React, { useEffect, useRef } from "react";
+import {useDispatch, useSelector} from "react-redux";
 
 
 export default (props) => {
     const reactCanvas = useRef(null);
     const { antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady, ...rest } = props;
-
+    const{value} = useSelector((state)=> state.game)
+    const dispatch = useDispatch()
     useEffect(() => {
         if (reactCanvas.current) {
             const engine = new Engine(reactCanvas.current, antialias, engineOptions, adaptToDeviceRatio);

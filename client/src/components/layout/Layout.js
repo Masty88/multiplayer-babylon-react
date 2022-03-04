@@ -14,7 +14,7 @@ import {Link} from "react-router-dom";
 import {CssBaseline} from "@mui/material";
 import React, {useEffect} from "react";
 import {resetProfile} from "../../redux/profile/profileSlice";
-import {toggleLoading} from "../../redux/app/appSlice";
+import {toggleGaming, toggleLoading} from "../../redux/app/appSlice";
 import Loading from "./Loading";
 
 
@@ -26,6 +26,13 @@ const Layout = ({children})=>{
     const {user}= useSelector((state)=>
         state.auth
     );
+
+    useEffect(()=>{
+        if(!user){
+            navigate('/')
+            dispatch(toggleGaming(false))
+        }
+    },[user])
 
     const onLogout = () => {
         dispatch(logout())

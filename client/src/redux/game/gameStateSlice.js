@@ -3,7 +3,7 @@ import {createSlice} from "@reduxjs/toolkit";
 const gameStateSlice= createSlice({
     name: 'game',
     initialState:{
-       value: "START_CITY"
+       value: "GO_TO_START"
     },
     reducers:{
         changeState:(state,action)=>{

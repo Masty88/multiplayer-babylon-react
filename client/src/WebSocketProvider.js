@@ -7,6 +7,7 @@ const WebSocketContext = createContext();
 
 export const WebSocketProvider = props => {
     const dispatch = useDispatch();
+    const[isConnected, setIsConnected]= useState(false)
     const [ ws, setWs ] = useState(null);
     const [ err, setErr ] = useState(null);
 
@@ -18,8 +19,7 @@ export const WebSocketProvider = props => {
         });
 
         socket.on('connect', () => {
-            dispatch(toggleLoading());
-            console.log("connected")
+            setIsConnected(true);
         });
 
         const errorListener = err => setErr(err);
@@ -32,7 +32,7 @@ export const WebSocketProvider = props => {
     }, [ ]);
 
     return (
-        <WebSocketContext.Provider value={{ ws, err }}>
+        <WebSocketContext.Provider value={{isConnected, ws, err }}>
             {props.children}
         </WebSocketContext.Provider>
     );
