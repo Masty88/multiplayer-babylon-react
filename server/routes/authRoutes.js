@@ -54,13 +54,15 @@ router.post('/',[
 
         const payload ={
             user:{
-                id: user.id
+                id: user.id,
+                username: user.username
             }
         }
 
         jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:36000},(err, token)=>{
             if(err) throw err;
-            res.json({success:true, token, user})
+            console.log(payload)
+            res.json({success:true, token,payload})
         })
 
     }catch (err){

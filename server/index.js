@@ -47,8 +47,39 @@ const io = new Server(httpServer,{
 //         next(new Error('Not authenticated'));
 //     }
 // });
+
+const players={}
+
 io.on('connect', socket => {
     console.log('connected');
+    socket.on("join_start_town", (room)=>{
+        socket.join(room)
+        console.log(`User with ${socket.id} joined room ${room}`)
+    })
+    socket.on("playerCreated",(data)=>{
+        console.log(`new Player Created with ${data.id}`)
+        players[data.id]=data;
+        socket.broadcast.emit("newPlayerCreated", data)
+
+        for(let key in players){
+            if(key === socket.id) continue;
+            socket.in(data.room).emit("newPlayerCreated", players[key])
+            console.log(players)
+        }
+    })
+    // socket.on("playerMove",(data)=>{
+    //     players[data.id]= data;
+    //     socket.broadcast.emit("anotherPlayerMove",data)
+    // })
+    socket.on("logout",data=>{
+        console.log('User Disconnect', socket.id)
+        delete (players[socket.id])
+    })
+    socket.on("disconnect",  (data)=> {
+        console.log('User Disconnect', socket.id)
+        delete (players[socket.id])
+    });
+
 });
 
 

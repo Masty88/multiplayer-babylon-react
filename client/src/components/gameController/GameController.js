@@ -42,9 +42,10 @@ class GameController {
 
     handleSocket(scene,socket){
         socket.on("newPlayerCreated",(data)=>{
-                this.createPlayer(scene,socket,data)
-            })
-            socket.on("anotherPlayerMove",(data)=>{
+            this.createPlayer(scene,socket,data)
+            });
+        socket.on("anotherPlayerMove",(data)=>{
+                console.log(data)
                 this.player=this.players[data.id];
                 this.player.setState(data)
             })
@@ -57,7 +58,7 @@ class GameController {
         if(this.value=== "START_CITY" ){
             this.handleSocket(scene,socket)
             this.goToCutScene(scene,socket,socket)
-            console.log(socket.id)
+             socket.emit("join_start_town", this.value)
         }
     }
 
@@ -129,25 +130,7 @@ class GameController {
     }
 
     async setUpGame(scene,socket){
-        // const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        // this.playerUI = playerUI;
-        // this.playerUI.idealHeight = 720;
-        // const logOutBtn = Button.CreateSimpleButton("start", "LOGOUT");
-        // logOutBtn.width = "48px";
-        // logOutBtn.color= "white"
-        // logOutBtn.height = "86px";
-        // logOutBtn.thickness = 10;
-        // logOutBtn.verticalAlignment = 0;
-        // logOutBtn.horizontalAlignment = 1;
-        // logOutBtn.top = "-16px";
-        // playerUI.addControl(logOutBtn);
-        // logOutBtn.zIndex = 10;
-        // this.logOutBtn = logOutBtn;
-        // //when the button is down, make pause menu visable and add control to it
-        // logOutBtn.onPointerDownObservable.add(() => {
-        //     this.dispatch(this.logout)
-        // });
-        const ui= new uiController(this.dispatch,this.logout)
+        const ui= new uiController(this.dispatch,this.logout, socket )
         const environment= new EnvironmentController(scene)
         this.environment= environment;
         await this.environment.load()
@@ -176,7 +159,8 @@ class GameController {
                 y: this.player.mesh.position.y,
                 z: this.player.mesh.position.z,
                 rW: this.player.mesh.rotationQuaternion.w,
-                rY: this.player.mesh.rotationQuaternion.y
+                rY: this.player.mesh.rotationQuaternion.y,
+                room: this.value
             }
             this.player.setState=(data)=>{
                 this.player.mesh.position.x = data.x;
@@ -184,13 +168,15 @@ class GameController {
                 this.player.mesh.position.z = data.z;
                 this.player.mesh.rotationQuaternion.w= data.rW;
                 this.player.mesh.rotationQuaternion.y= data.rY;
+                this.player.state.room=this.value;
             }
             if(data){
+                console.log("new player")
              this.players[data.id]= this.player;
              this.player.setState(data);
             }else{
               socket.emit("playerCreated", this.player.state);
-              this.input= new InputController(socket,this.player);
+              this.input= new InputController(socket,this.player, this.value);
               this.player.controller= new PlayerController(this.input,this.player,socket);
               this.player.controller.activatePlayerCamera();
             }

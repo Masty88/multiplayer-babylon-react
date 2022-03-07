@@ -30,7 +30,6 @@ const App= ()=>{
             navigate('/menu')
         }
     }, []);
-
     return(
         <>
             {!gaming?(

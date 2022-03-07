@@ -11,8 +11,6 @@ const createProfile = async (profileData, token)=>{
             'x-auth-token': token,
         },
     }
-    console.log(config)
-
     const response= await axios.post(API_URL, profileData, config);
     return response.data
 };

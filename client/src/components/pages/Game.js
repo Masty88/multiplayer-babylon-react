@@ -29,8 +29,6 @@ const Game = () => {
         default: break;
     }
 
-    console.log(value)
-
     useEffect(()=>{
         if(!user){
             navigate('/')
@@ -38,7 +36,6 @@ const Game = () => {
         if(!gaming){
             navigate('/')
         }
-        console.log("here")
     },[])
 
     return (

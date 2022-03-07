@@ -9,7 +9,6 @@ const appSlice = createSlice({
     reducers:{
         toggleLoading:(state,action) =>{
             state.loading = !state.loading
-            console.log(state.loading)
         },
         toggleGaming:(state,action)=>{
             state.gaming=action.payload

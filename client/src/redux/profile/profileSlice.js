@@ -25,7 +25,6 @@ export const createProfile = createAsyncThunk('profile/create', async({profile},
 export const getProfile= createAsyncThunk('profile/get', async ({},thunkApi)=>{
     try {
         const token = thunkApi.getState().auth.user.token
-        console.log(token)
         return await profileService.getProfile(token)
     } catch (error) {
         const message = error.response.data.errors[0].msg

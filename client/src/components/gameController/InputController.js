@@ -6,10 +6,11 @@ import {ActionManager, ExecuteCodeAction, Scalar} from "@babylonjs/core";
 class InputController extends GameObject{
 
 
-    constructor(socket, player) {
+    constructor(socket, player, value) {
         super();
         this.scene.actionManager= new ActionManager(this.scene);
         this.inputMap={};
+        this.value= value
 
         this.scene.actionManager.registerAction(
             new ExecuteCodeAction(ActionManager.OnKeyDownTrigger,(event)=>{
@@ -29,7 +30,6 @@ class InputController extends GameObject{
         // this.dashing = false;
 
         this.player= player;
-        console.log(this.player)
     }
 
     updateFromKeyboard=()=>{
@@ -72,21 +72,22 @@ class InputController extends GameObject{
             this.jumpKeyDown = false;
         }
 
-        // if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
-        //     this.notifyServer= true;
-        // }
-        // else{
-        //     this.notifyServer= false;
-        // }
-        //
-        // if(this.notifyServer){
-        //     this.player.state.x= this.player.mesh.position.x;
-        //     this.player.state.y= this.player.mesh.position.y;
-        //     this.player.state.z= this.player.mesh.position.z;
-        //     this.player.state.rW= this.player.mesh.rotationQuaternion.w;
-        //     this.player.state.rY= this.player.mesh.rotationQuaternion.y;
-        //     this.socket.emit("playerMove", this.player.state)
-        // }
+        if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
+            this.notifyServer= true;
+        }
+        else{
+            this.notifyServer= false;
+        }
+
+        if(this.notifyServer){
+            this.player.state.x= this.player.mesh.position.x;
+            this.player.state.y= this.player.mesh.position.y;
+            this.player.state.z= this.player.mesh.position.z;
+            this.player.state.rW= this.player.mesh.rotationQuaternion.w;
+            this.player.state.rY= this.player.mesh.rotationQuaternion.y;
+            this.player.state.room= this.value;
+            this.socket.emit("playerMove", this.player.state)
+        }
 
     }
 }
