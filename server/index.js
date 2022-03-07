@@ -59,18 +59,18 @@ io.on('connect', socket => {
     socket.on("playerCreated",(data)=>{
         console.log(`new Player Created with ${data.id}`)
         players[data.id]=data;
-        socket.broadcast.emit("newPlayerCreated", data)
+        socket.broadcast.to(data.room).emit("newPlayerCreated", data)
 
         for(let key in players){
             if(key === socket.id) continue;
-            socket.in(data.room).emit("newPlayerCreated", players[key])
+            socket.to(data.room).emit("newPlayerCreated", players[key])
             console.log(players)
         }
     })
-    // socket.on("playerMove",(data)=>{
-    //     players[data.id]= data;
-    //     socket.broadcast.emit("anotherPlayerMove",data)
-    // })
+    socket.on("playerMove",(data)=>{
+        players[data.id]= data;
+        socket.broadcast.to(data.room).emit("anotherPlayerMove",data)
+    })
     socket.on("logout",data=>{
         console.log('User Disconnect', socket.id)
         delete (players[socket.id])
