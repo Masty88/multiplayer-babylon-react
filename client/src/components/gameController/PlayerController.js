@@ -6,7 +6,7 @@ import {
     Color4,
     FreeCamera,
     Matrix, Mesh,
-    MeshBuilder,
+    MeshBuilder, Observable,
     Quaternion, Ray,
     StandardMaterial, TransformNode, UniversalCamera,
     Vector3
@@ -17,7 +17,7 @@ import {
 
 class PlayerController extends GameObject{
 
-    static PLAYER_SPEED= 0.45;
+    static PLAYER_SPEED= 0.10;
     static GRAVITY = -2.8;
     static JUMP_FORCE = 0.8;
     static DASH_FACTOR= 2.5;
@@ -25,13 +25,31 @@ class PlayerController extends GameObject{
 
     gravity = new Vector3();
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
+    playerAnimation;
 
-    constructor(input,player) {
+    constructor(input,player, value) {
         super();
         this.setupPlayerCamera();
         this.isJumping = false;
         this.player= player
         this.input = input;
+        this.value= value
+
+        //Player Animation
+        // this.idle= this.player.mesh.idle
+        // console.log("idle",this.player.mesh.idle)
+        // this.landing=this.player.mesh.landing= this.scene.getAnimationGroupByName("landing");
+        // this.walking=this.player.mesh.walking= this.scene.getAnimationGroupByName("walking");
+        // console.log("walking",this.player.mesh.walking.uniqueId)
+        // this.animation= this.mesh.getAnimationByName("walking")
+        // this.idle= this.player.mesh.idle;
+        // this.landing= this.player.mesh.landing;
+        // this.walking= this.player.mesh.walking;
+        this.currentAnimation= null;
+        this.isFalling= false;
+        // this.setUpAnimations()
+
+        this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
     }
 
     updateFromControl(){
@@ -78,8 +96,57 @@ class PlayerController extends GameObject{
         this.player.mesh.rotationQuaternion = Quaternion.Slerp(this.player.mesh.rotationQuaternion, targ, 10 * this.deltaTime);
     }
 
+    //  setUpAnimations(){
+    //     this.scene.stopAllAnimations();
+    //    this.idle.loopAnimation= true;
+    //    this.landing.loopAnimation= true;
+    //    this.walking.loopAnimation=true;
+    //    this.currentAnimation= this.idle;
+    //    this.prevAnimation= this.landing;
+    // }
+
+    // animatePlayer(){
+    //
+    //     if(!this.isFalling && !this.isJumping &&
+    //         (this.input.inputMap["ArrowUp"] || this.input.inputMap["ArrowDown"] ||
+    //         this.input.inputMap["ArrowLeft"] || this.input.inputMap["ArrowRight"]
+    //         )){
+    //         this.currentAnimation= this.walking;
+    //          this.isAnimating= true
+    //     }else if(!this.isFalling && this.grounded){
+    //         this.currentAnimation= this.idle;
+    //          this.isAnimating=false
+    //     }
+    //
+    //     if(this.currentAnimation != null && this.prevAnimation !== this.currentAnimation){
+    //         this.prevAnimation.stop();
+    //         this.currentAnimation.play(this.currentAnimation.loopAnimation);
+    //         this.prevAnimation = this.currentAnimation;
+    //     }
+    //
+    //
+    //     this.currentAnimation.state={
+    //         id: this.socket.id,
+    //         animation: null,
+    //         animationId: null,
+    //         room: this.value,
+    //     }
+    //
+    //     if(this.isAnimating) {
+    //             this.currentAnimation.state.animation= this.currentAnimation.name;
+    //             this.currentAnimation.state.animationId= this.currentAnimation.uniqueId
+    //             this.socket.emit("playAnimation", this.currentAnimation.state)
+    //     }
+        // else{
+        //     this.currentAnimation.state.animation= null;
+        //     this.socket.emit("playAnimation", this.currentAnimation.state);
+        // }
+
+
+    // }
+
     floorRayCast(offsetx, offsetz, raycastlen){
-        let raycastFloorPos = new Vector3(this.player.mesh.position.x + offsetx, this.player.mesh.position.y +0.1, this.player.mesh.position.z + offsetz);
+        let raycastFloorPos = new Vector3(this.player.mesh.position.x + offsetx, this.player.mesh.position.y, this.player.mesh.position.z + offsetz);
         let ray = new Ray(raycastFloorPos, Vector3.Up().scale(-1), raycastlen);
         let predicate = function (mesh) {
             return mesh.isPickable && mesh.isEnabled();
@@ -93,7 +160,7 @@ class PlayerController extends GameObject{
     }
 
     isGrounded(){
-        if(this.floorRayCast(0,0,0.6).equals(Vector3.Zero())){
+        if(this.floorRayCast(0,0,1).equals(Vector3.Zero())){
             return false
         }else{
             return true;
@@ -109,6 +176,10 @@ class PlayerController extends GameObject{
             this.gravity.y = -PlayerController.JUMP_FORCE;
         }
 
+        if (this.gravity.y < 0 && this.isJumping) { //todo: play a falling anim if not grounded BUT not on a slope
+            this.isFalling = true;
+        }
+
         this.player.mesh.moveWithCollisions(this.moveDirection.addInPlace(this.gravity));
 
         if (this.isGrounded()) {
@@ -117,6 +188,7 @@ class PlayerController extends GameObject{
             this.lastGroundPos.copyFrom(this.player.mesh.position);
             this.jumpCount = 1;
             this.isJumping=false
+            this.isFalling= false;
         }
 
         //Jump detection
@@ -124,6 +196,7 @@ class PlayerController extends GameObject{
             this.gravity.y = PlayerController.JUMP_FORCE;
             this.jumpCount--;
             this.isJumping= true;
+            this.isFalling= false;
         }
 
         if(this.isJumping){
@@ -137,20 +210,31 @@ class PlayerController extends GameObject{
     }
 
     beforeRenderUpdate(){
-        this.updateFromControl()
-        this.updateGroundDetection()
+        this.updateFromControl();
+        this.updateGroundDetection();
+        // this.animatePlayer();
     }
 
     activatePlayerCamera(){
         this.beforeLoop= ()=>{
             this.beforeRenderUpdate();
-            this.updateCamera()
+            this.updateCamera();
         }
 
         return this.camera;
     }
 
     updateCamera(){
+        //trigger areas for rotating camera view
+        if (this.player.mesh.intersectsMesh(this.scene.getMeshByName("cornerTrigger_primitive1"))) {
+            if (this.input.horizontalAxis > 0) { //rotates to the right
+                console.log("here")
+                this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, Math.PI / 2, this._camRoot.rotation.z), 0.4);
+            } else if (this.input.horizontalAxis < 0) { //rotates to the left
+                this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, Math.PI, this._camRoot.rotation.z), 0.4);
+            }
+        }
+
         let centerPlayer = this.player.mesh.position.y + 2;
         this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x, centerPlayer, this.player.mesh.position.z), 0.4);
     }

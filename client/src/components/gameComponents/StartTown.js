@@ -24,7 +24,6 @@ const StartTown= () => {
     },[user])
 
     const onSceneReady = async (scene,engine) => {
-
         let game = new GameController(scene, ws, engine, value, dispatch, changeState(),logout());
     };
 

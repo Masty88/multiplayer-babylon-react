@@ -7,28 +7,27 @@ class EnvironmentController extends GameObject{
         super();
     }
     async load(){
-        let ground = MeshBuilder.CreateBox("ground", {size:44}, this.scene)
-        ground.scaling = new Vector3(1,.01,1);
-        ground.receiveShadows= true;
-        // const assets = await this.loadAsset();
-        // assets.allMeshes.forEach(mesh=>{
-        //     mesh.receiveShadows = true;
-        //     mesh.checkCollisions = true;
-        // })
+        // let ground = MeshBuilder.CreateBox("ground", {size:44}, this.scene)
+        // ground.scaling = new Vector3(1,.01,1);
+        // ground.receiveShadows= true;
+        const assets = await this.loadAsset();
+        assets.allMeshes.forEach(mesh=>{
+            mesh.receiveShadows = true;
+            mesh.checkCollisions = true;
+        })
 
     }
 
-    // async loadAsset(){
-    //     const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "envSetting.glb", this.scene)
-    //      console.log(result)
-    //     let env = result.meshes[0];
-    //     let allMeshes = env.getChildMeshes();
-    //
-    //     return{
-    //         env,
-    //         allMeshes
-    //     }
-    // }
+    async loadAsset(){
+        const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "starttown.glb", this.scene)
+        let env = result.meshes[0];
+        let allMeshes = env.getChildMeshes();
+
+        return{
+            env,
+            allMeshes
+        }
+    }
 }
 
 export default EnvironmentController;

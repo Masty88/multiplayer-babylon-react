@@ -25,10 +25,6 @@ class InputController extends GameObject{
             this.updateFromKeyboard();
         })
 
-        // //jumping and dashing
-        // this.jumpKeyDown = false;
-        // this.dashing = false;
-
         this.player= player;
     }
 
@@ -88,7 +84,6 @@ class InputController extends GameObject{
             this.player.state.room= this.value;
             this.socket.emit("playerMove", this.player.state)
         }
-
     }
 }
 

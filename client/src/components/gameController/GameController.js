@@ -8,7 +8,7 @@ import {
     Matrix,
     Mesh,
     MeshBuilder, PointLight,
-    Quaternion, Scene, ShadowGenerator,
+    Quaternion, Scene, SceneLoader, ShadowGenerator,
     StandardMaterial, UniversalCamera,
     Vector3
 } from "@babylonjs/core";
@@ -17,10 +17,6 @@ import PlayerCreator from "./PlayerCreator";
 import {AdvancedDynamicTexture, Button, Control} from "@babylonjs/gui";
 import UiController from "./UiController";
 import uiController from "./UiController";
-
-
-
-
 
 
 class GameController {
@@ -45,10 +41,26 @@ class GameController {
             this.createPlayer(scene,socket,data)
             });
         socket.on("anotherPlayerMove",(data)=>{
-                console.log(data)
                 this.player=this.players[data.id];
                 this.player.setState(data)
             })
+       socket.on("anotherPlayerAnimated",async (data)=>{
+           // console.log(scene.animationGroups)
+           // console.log(data.id)
+           //  const animation= scene.animationGroups.filter(animation=> animation.name === data.animation && animation.uniqueId == "456")
+           // console.log(animation)
+           // scene.animation.start()
+           // console.log(data)
+           // this.player=this.players[data.id];
+           // console.log(this.player)
+           //console.log(data.currentAnimation)
+           // console.log(scene.animationGroups[5])
+           // scene.animationGroups[5].start()
+           // if(data.animation !== null){
+           //      this.player=this.players[data.id];
+           //      console.log(data.currentAnimation)
+           //  }
+        })
     }
 
     handleScene(scene,socket){
@@ -58,7 +70,7 @@ class GameController {
         if(this.value=== "START_CITY" ){
             this.handleSocket(scene,socket)
             this.goToCutScene(scene,socket,socket)
-             socket.emit("join_start_town", this.value)
+            socket.emit("join_start_town", this.value)
         }
     }
 
@@ -82,9 +94,6 @@ class GameController {
         startBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         guiMenu.addControl(startBtn);
 
-
-
-
         //this handles interactions with the start button attached to the scene
         startBtn.onPointerDownObservable.add(() => {
             this.changeScene.payload="START_CITY"
@@ -94,7 +103,6 @@ class GameController {
         //--SCENE FINISHED LOADING--
         await scene.whenReadyAsync();
         this.engine.hideLoadingUI();
-
     }
 
 
@@ -120,9 +128,8 @@ class GameController {
         cutScene.addControl(next)
 
         await scene.whenReadyAsync();
-        this.engine.hideLoadingUI();
-
         let finishedLoading = false;
+
         await this.setUpGame(scene,socket).then(res =>{
             cutScene.removeControl(next)
             finishedLoading = true;
@@ -140,19 +147,22 @@ class GameController {
 
     async loadCharacterAsync(scene,socket){
         const light0 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
-        light0.intensity=0.5;
-        this.createPlayer(scene,socket)
+        light0.intensity=0.8;
+        await this.createPlayer(scene,socket)
     }
 
-    createPlayer(scene,socket,data){
+     async createPlayer(scene,socket,data){
             const light = new PointLight("sparklight", new Vector3(0, -1, 0), scene);
             light.diffuse = new Color3(0.08627450980392157, 0.10980392156862745, 0.15294117647058825);
             light.intensity = 10;
             light.radius = 1;
+
             const shadowGenerator = new ShadowGenerator(1024, light);
             shadowGenerator.darkness = 100;
+
             //Create the player
-            this.player = new PlayerCreator(shadowGenerator);
+            this.player =  new PlayerCreator(shadowGenerator, this.engine);
+             await this.player.loadMesh(shadowGenerator);
             this.player.state={
                 id: socket.id,
                 x: this.player.mesh.position.x,
@@ -160,7 +170,7 @@ class GameController {
                 z: this.player.mesh.position.z,
                 rW: this.player.mesh.rotationQuaternion.w,
                 rY: this.player.mesh.rotationQuaternion.y,
-                room: this.value
+                room: this.value,
             }
             this.player.setState=(data)=>{
                 this.player.mesh.position.x = data.x;
@@ -171,17 +181,17 @@ class GameController {
                 this.player.state.room=this.value;
             }
             if(data){
-                console.log("new player")
              this.players[data.id]= this.player;
              this.player.setState(data);
             }else{
               socket.emit("playerCreated", this.player.state);
               this.input= new InputController(socket,this.player, this.value);
-              this.player.controller= new PlayerController(this.input,this.player,socket);
+              this.player.controller= new PlayerController(this.input,this.player,this.value);
               this.player.controller.activatePlayerCamera();
+              console.log(this.player.mesh)
             }
-
     }
+
 }
 
 
