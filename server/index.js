@@ -71,7 +71,6 @@ io.on('connect', socket => {
         socket.to(data.room).emit("anotherPlayerMove",data)
     })
     socket.on("playAnimation", (data)=>{
-        console.log(data.id)
         players[data.id]= data;
         socket.to(data.room).emit("anotherPlayerAnimated",data)
     })

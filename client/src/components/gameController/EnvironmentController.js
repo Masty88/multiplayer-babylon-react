@@ -19,7 +19,7 @@ class EnvironmentController extends GameObject{
     }
 
     async loadAsset(){
-        const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "starttown.glb", this.scene)
+        const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "start_city.glb", this.scene)
         let env = result.meshes[0];
         let allMeshes = env.getChildMeshes();
 

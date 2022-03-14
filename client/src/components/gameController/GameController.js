@@ -3,12 +3,12 @@ import EnvironmentController from "./EnvironmentController";
 import PlayerController from "./PlayerController";
 import {
     Color3,
-    Color4, FreeCamera,
+    Color4, DirectionalLight, FreeCamera,
     HemisphericLight,
     Matrix,
     Mesh,
     MeshBuilder, PointLight,
-    Quaternion, Scene, SceneLoader, ShadowGenerator,
+    Quaternion, Scene, SceneLoader, ShadowGenerator, SpotLight,
     StandardMaterial, UniversalCamera,
     Vector3
 } from "@babylonjs/core";
@@ -41,26 +41,17 @@ class GameController {
             this.createPlayer(scene,socket,data)
             });
         socket.on("anotherPlayerMove",(data)=>{
-                this.player=this.players[data.id];
-                this.player.setState(data)
+            // console.log(data)
+            this.player=this.players[data.id];
+            console.log(this.player.rigMesh)
+            this.player.setState(data)
+
+            // socket.on("anotherPlayerAnimated",(data)=>{
+            //     const animation= this.player.rigMesh.animationGroups.filter(animation=> animation.name === data.animation);
+            //     // animation[0].loopAnimation= true;
+            //     animation[0].play(animation[0].loopAnimation)
+            // })
             })
-       socket.on("anotherPlayerAnimated",async (data)=>{
-           // console.log(scene.animationGroups)
-           // console.log(data.id)
-           //  const animation= scene.animationGroups.filter(animation=> animation.name === data.animation && animation.uniqueId == "456")
-           // console.log(animation)
-           // scene.animation.start()
-           // console.log(data)
-           // this.player=this.players[data.id];
-           // console.log(this.player)
-           //console.log(data.currentAnimation)
-           // console.log(scene.animationGroups[5])
-           // scene.animationGroups[5].start()
-           // if(data.animation !== null){
-           //      this.player=this.players[data.id];
-           //      console.log(data.currentAnimation)
-           //  }
-        })
     }
 
     handleScene(scene,socket){
@@ -68,9 +59,9 @@ class GameController {
             this.goToStart(scene,socket)
         }
         if(this.value=== "START_CITY" ){
-            this.handleSocket(scene,socket)
             this.goToCutScene(scene,socket,socket)
             socket.emit("join_start_town", this.value)
+            this.handleSocket(scene,socket)
         }
     }
 
@@ -145,24 +136,36 @@ class GameController {
 
     }
 
-    async loadCharacterAsync(scene,socket){
-        const light0 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
-        light0.intensity=0.8;
-        await this.createPlayer(scene,socket)
+     loadCharacterAsync(scene,socket){
+        const light0 = new DirectionalLight("dir01", new Vector3(-1, -2, -1), scene);
+        light0.position = new Vector3(20, 40, 20);
+        // light0.intensity = 0.9;
+        // const light0 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
+        // light0.intensity=0.8;
+         this.createPlayer(scene,socket)
     }
 
-     async createPlayer(scene,socket,data){
-            const light = new PointLight("sparklight", new Vector3(0, -1, 0), scene);
-            light.diffuse = new Color3(0.08627450980392157, 0.10980392156862745, 0.15294117647058825);
-            light.intensity = 10;
-            light.radius = 1;
+   async createPlayer(scene,socket,data){
 
-            const shadowGenerator = new ShadowGenerator(1024, light);
+         const light = new PointLight("sparklight", new Vector3(-2, 5, 2), scene);
+         light.diffuse = new Color3(0.08627450980392157, 0.10980392156862745, 0.15294117647058825);
+         light.intensity = 10;
+         light.radius = 1;
+
+         var lightSphere2 = Mesh.CreateSphere("sphere", 10, 2, scene);
+         lightSphere2.position = light.position;
+         lightSphere2.material = new StandardMaterial("light", scene);
+         lightSphere2.material.emissiveColor = new Color3(1, 1, 0);
+
+
+         const shadowGenerator = new ShadowGenerator(1024, light);
+         // const shadowGenerator2 = new ShadowGenerator(1024, light0);
             shadowGenerator.darkness = 100;
 
             //Create the player
-            this.player =  new PlayerCreator(shadowGenerator, this.engine);
-             await this.player.loadMesh(shadowGenerator);
+            this.player =  new PlayerCreator( this.engine, shadowGenerator);
+            this.player.rigMesh =  await this.player.loadMesh();
+
             this.player.state={
                 id: socket.id,
                 x: this.player.mesh.position.x,
@@ -185,10 +188,14 @@ class GameController {
              this.player.setState(data);
             }else{
               socket.emit("playerCreated", this.player.state);
-              this.input= new InputController(socket,this.player, this.value);
-              this.player.controller= new PlayerController(this.input,this.player,this.value);
-              this.player.controller.activatePlayerCamera();
-              console.log(this.player.mesh)
+              if(this.player.rigMesh){
+                  console.log("ok")
+                  this.input= new InputController(socket,this.player, this.value);
+                  this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine);
+                  this.player.controller.activatePlayerCamera();
+                  console.log(this.player.rigMesh)
+              }
+
             }
     }
 
