@@ -29,22 +29,16 @@ class PlayerController extends GameObject{
 
     constructor(input,player, value, engine) {
         super();
-        this.setupPlayerCamera();
         this.isJumping = false;
         this.player= player
         this.input = input;
         this.value= value
         this.engine= engine;
+        this.loadAnimMesh();
+        this.setupPlayerCamera();
+
 
         // //Player Animation
-        console.log(this.player.rigMesh.animationGroups)
-         this.idle= this.player.rigMesh.animationGroups;
-        console.log(this.idle)
-        // this.landing= this.player.mesh.landing;
-        // this.walking= this.player.mesh.walking;
-        // this.currentAnimation= null;
-        // this.isFalling= false;
-        // this.setUpAnimations()
         this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
     }
 
@@ -92,52 +86,52 @@ class PlayerController extends GameObject{
         this.player.mesh.rotationQuaternion = Quaternion.Slerp(this.player.mesh.rotationQuaternion, targ, 10 * this.deltaTime);
     }
 
-     setUpAnimations(){
-       //  this.scene.stopAllAnimations();
-       // this.idle.loopAnimation= true;
-       // this.landing.loopAnimation= true;
-       // this.walking.loopAnimation=true;
-       // this.currentAnimation= this.idle;
-       // this.prevAnimation= this.landing;
-       // this.isAnimating=false;
+    async loadAnimMesh(){
+        this.player.rigMesh=await this.player.loadMesh();
+        this.idle= this.player.mesh.idle;
+        this.landing= this.player.mesh.landing;
+        this.walking= this.player.mesh.walking;
+        this.currentAnimation= null;
+        this.isFalling= false;
+        this.setUpAnimations()
     }
 
-    animatePlayer(){
-        //
-        // if(!this.isFalling && !this.isJumping &&
-        //     (this.input.inputMap["ArrowUp"] || this.input.inputMap["ArrowDown"] ||
-        //     this.input.inputMap["ArrowLeft"] || this.input.inputMap["ArrowRight"]
-        //     )){
-        //     this.currentAnimation= this.walking;
-        //      this.isAnimating= true
-        //     this.isIdle= false
-        // }else if(!this.isFalling && this.grounded){
-        //     this.currentAnimation= this.idle;
-        //      this.isIdle=true
-        //     this.isAnimating= false;
-        // }
-        //
-        // this.currentAnimation.state={
-        //     id: this.socket.id,
-        //     animation: null,
-        //     room: this.value,
-        // }
-        //
-        // if(this.currentAnimation != null && this.prevAnimation !== this.currentAnimation){
-        //     this.prevAnimation.stop();
-        //     this.currentAnimation.play(this.currentAnimation.loopAnimation);
-        //     this.prevAnimation = this.currentAnimation;
-        // }
+     setUpAnimations(){
+        this.scene.stopAllAnimations();
+       this.idle.loopAnimation= true;
+       this.landing.loopAnimation= true;
+       this.walking.loopAnimation=true;
+       this.currentAnimation= this.idle;
+       this.prevAnimation= this.landing;
 
-        // if(this.isAnimating) {
-        //     console.log("here")
-        //     if(this.isIdle){
-        //             this.currentAnimation.state.animation= "idle";
-        //     }else{
-        //             this.currentAnimation.state.animation= this.currentAnimation.name;
-        //         }
-        //     this.socket.emit("playAnimation", this.currentAnimation.state)
-        // }
+     }
+
+    animatePlayer(){
+        if(!this.isFalling && !this.isJumping &&
+            (this.input.inputMap["ArrowUp"] || this.input.inputMap["ArrowDown"] ||
+            this.input.inputMap["ArrowLeft"] || this.input.inputMap["ArrowRight"]
+            )){
+            this.currentAnimation= this.walking;
+             this.isAnimating= true
+            this.isIdle= false
+        }else if(!this.isFalling && this.grounded){
+            this.currentAnimation= this.idle;
+             this.isIdle=true
+            this.isAnimating= false;
+        }
+
+        if(this.currentAnimation != null && this.prevAnimation !== this.currentAnimation){
+            this.prevAnimation.stop();
+            this.currentAnimation.play(this.currentAnimation.loopAnimation);
+            this.prevAnimation = this.currentAnimation;
+            this.currentAnimation.state={
+                id: this.socket.id,
+                animation: this.currentAnimation.name,
+                room: this.value,
+            }
+            this.socket.emit("playAnimation", this.currentAnimation.state)
+        }
+
         // else{
         //     this.currentAnimation.state.animation= null;
         //     this.socket.emit("playAnimation", this.currentAnimation.state);
@@ -211,7 +205,7 @@ class PlayerController extends GameObject{
     beforeRenderUpdate(){
         this.updateFromControl();
         this.updateGroundDetection();
-         // this.animatePlayer();
+        this.animatePlayer();
     }
 
     activatePlayerCamera(){

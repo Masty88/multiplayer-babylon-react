@@ -40,18 +40,22 @@ class GameController {
         socket.on("newPlayerCreated",(data)=>{
             this.createPlayer(scene,socket,data)
             });
-        socket.on("anotherPlayerMove",(data)=>{
-            // console.log(data)
-            this.player=this.players[data.id];
-            console.log(this.player.rigMesh)
+        socket.on("anotherPlayerMove", (data)=>{
+            this.player= this.players[data.id];
             this.player.setState(data)
+        })
+        socket.on("anotherPlayerAnimated",(data)=>{
+            console.log(data)
+            this.player= this.players[data.id];
+            if(data.animation !== null){
+                this.player.mesh[data.animation].loopAnimation= true
+                this.player.mesh[data.animation].stop()
+                this.player.mesh[data.animation].play(this.player.mesh[data.animation].loopAnimation)
+            }
 
-            // socket.on("anotherPlayerAnimated",(data)=>{
-            //     const animation= this.player.rigMesh.animationGroups.filter(animation=> animation.name === data.animation);
-            //     // animation[0].loopAnimation= true;
-            //     animation[0].play(animation[0].loopAnimation)
-            // })
-            })
+             // const animation= this.player.rigMesh.animationGroups.filter(animation=> animation.name === data.animation);
+            // animation[0].play(animation[0].loopAnimation)
+        })
     }
 
     handleScene(scene,socket){
@@ -61,7 +65,7 @@ class GameController {
         if(this.value=== "START_CITY" ){
             this.goToCutScene(scene,socket,socket)
             socket.emit("join_start_town", this.value)
-            this.handleSocket(scene,socket)
+
         }
     }
 
@@ -133,7 +137,7 @@ class GameController {
         this.environment= environment;
         await this.environment.load()
         await this.loadCharacterAsync(scene,socket)
-
+        await this.handleSocket(scene,socket)
     }
 
      loadCharacterAsync(scene,socket){
@@ -145,7 +149,7 @@ class GameController {
          this.createPlayer(scene,socket)
     }
 
-   async createPlayer(scene,socket,data){
+   createPlayer(scene,socket,data){
 
          const light = new PointLight("sparklight", new Vector3(-2, 5, 2), scene);
          light.diffuse = new Color3(0.08627450980392157, 0.10980392156862745, 0.15294117647058825);
@@ -164,7 +168,6 @@ class GameController {
 
             //Create the player
             this.player =  new PlayerCreator( this.engine, shadowGenerator);
-            this.player.rigMesh =  await this.player.loadMesh();
 
             this.player.state={
                 id: socket.id,
@@ -186,17 +189,16 @@ class GameController {
             if(data){
              this.players[data.id]= this.player;
              this.player.setState(data);
+             this.player.loadMesh()
+                this.player.startSocket= true;
             }else{
               socket.emit("playerCreated", this.player.state);
-              if(this.player.rigMesh){
-                  console.log("ok")
                   this.input= new InputController(socket,this.player, this.value);
                   this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine);
                   this.player.controller.activatePlayerCamera();
-                  console.log(this.player.rigMesh)
-              }
-
+                 this.player.startSocket= true;
             }
+
     }
 
 }
