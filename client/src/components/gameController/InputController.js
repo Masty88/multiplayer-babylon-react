@@ -1,12 +1,20 @@
 import GameObject from "./GameObject";
-import {ActionManager, ExecuteCodeAction, Scalar} from "@babylonjs/core";
+import {
+    ActionManager,
+    ArcRotateCamera,
+    ExecuteCodeAction,
+    FreeCamera,
+    PointerEventTypes,
+    Scalar,
+    Vector3
+} from "@babylonjs/core";
 
 
 
 class InputController extends GameObject{
 
 
-    constructor(socket, player, value) {
+    constructor(socket, player, value, engine) {
         super();
         this.scene.actionManager= new ActionManager(this.scene);
         this.inputMap={};
@@ -26,7 +34,9 @@ class InputController extends GameObject{
         })
 
         this.player= player;
+        this.engine= engine;
     }
+
 
     updateFromKeyboard=()=>{
         if (this.inputMap["ArrowLeft"]) {
@@ -67,6 +77,22 @@ class InputController extends GameObject{
         } else {
             this.jumpKeyDown = false;
         }
+
+        //Jump Checks (SPACE)
+        if (this.inputMap["e"]) {
+            console.log("activate free camera")
+            this.freeCam= new ArcRotateCamera("Camera", Math.PI / 2, 0, 2, Vector3.Zero(), this.scene);
+            this.freeCam.inputs.attached.keyboard.detachControl()
+            this.freeCam.checkCollisions=true
+            this.freeCam.setPosition(new Vector3(0,5,0))
+            this.freeCam.target= this.player.mesh.position;
+            this.freeCam.upperRadiusLimit=50;
+            this.freeCam.attachControl(this.engine.getRenderingCanvas(),true)
+            this.scene.activeCamera= this.freeCam;
+        }else if(this.inputMap["r"] || this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
+            this.scene.activeCamera= this.player.controller.camera
+        }
+
 
         if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
             this.notifyServer= true;

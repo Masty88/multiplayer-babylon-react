@@ -194,7 +194,7 @@ class GameController {
              console.log(this.players)
             }else{
               socket.emit("playerCreated", this.player.state);
-                  this.input= new InputController(socket,this.player, this.value);
+                  this.input= new InputController(socket,this.player, this.value,this.engine);
                   this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine);
                   this.player.controller.activatePlayerCamera();
                  this.player.startSocket= true;

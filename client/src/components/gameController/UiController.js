@@ -1,5 +1,6 @@
 import GameObject from "./GameObject";
-import {AdvancedDynamicTexture, Button} from "@babylonjs/gui";
+import {AdvancedDynamicTexture, Button, Control, Rectangle, TextBlock} from "@babylonjs/gui";
+import {Color3} from "@babylonjs/core";
 
 
 class UiController extends GameObject{
@@ -7,29 +8,62 @@ class UiController extends GameObject{
         super();
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.playerUI = playerUI;
-        this.playerUI.idealHeight = 720;
         this.dispatch= dispatch;
         this.logout=logout;
         this.socket= socket;
         this.data= data
+        // this.loadUi()
 
-        const logOutBtn = Button.CreateSimpleButton("start", "LOGOUT");
-        logOutBtn.width = "48px";
-        logOutBtn.color= "white"
-        logOutBtn.height = "86px";
-        logOutBtn.thickness = 0;
-        logOutBtn.verticalAlignment = 0;
-        logOutBtn.horizontalAlignment = 1;
-        logOutBtn.top = "-16px";
-        playerUI.addControl(logOutBtn);
-        logOutBtn.zIndex = 10;
-        this.logOutBtn = logOutBtn;
-        //when the button is down, make pause menu visable and add control to it
-        logOutBtn.onPointerDownObservable.add(() => {
+        this.containerTop= new Rectangle();
+        this.containerTop.width= "100%"
+        this.containerTop.height= "64px";
+        this.containerTop.color= "transparent"
+        this.containerTop.background= "Orange";
+        playerUI.addControl(this.containerTop)
+        this.containerTop.verticalAlignment= Control.VERTICAL_ALIGNMENT_TOP;
+
+        this.avavtar=
+
+        //Logout Button
+        this.logoutButton=this.createButton("logout","Logout", "-30px")
+        this.containerTop.addControl(this.logoutButton);
+        this.logoutButton.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this.logoutButton.onPointerEnterObservable.add(()=> {
+            console.log(this.logoutButton.background)
+            this.logoutButton.background="Red"
+        });
+        this.logoutButton.onPointerOutObservable.add(()=> {
+            this.logoutButton.background="Black"
+        });
+         this.logoutButton.onPointerDownObservable.add(() => {
             socket.emit("logout", data);
             socket.removeAllListeners();
            this.dispatch(this.logout)
         });
+
+
+    }
+
+    createButton(name,text,left){
+        this.result= new Button(name);
+        this.result.width = "60px";
+        this.result.height = "40px";
+        this.result.color = "white";
+        this.result.background = "black";
+        this.result.thickness= 0;
+        this.result.left= left;
+
+
+        //Adding Text
+        this.textBlock= new TextBlock(name +"_button", text)
+        this.textBlock.resizeToFit= true;
+        this.textBlock.fontSize="15px"
+        this.textBlock.paddingLeft="20px";
+        this.textBlock.paddingRight="20px";
+        this.textBlock.textHorizontalAlignment= Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this.result.addControl(this.textBlock);
+
+        return this.result
 
     }
 

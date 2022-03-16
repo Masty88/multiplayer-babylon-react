@@ -6,7 +6,7 @@ import {
     Color4,
     FreeCamera,
     Matrix, Mesh,
-    MeshBuilder, Observable,
+    MeshBuilder, Observable, PointerEventTypes,
     Quaternion, Ray,
     StandardMaterial, TransformNode, UniversalCamera,
     Vector3
@@ -36,6 +36,7 @@ class PlayerController extends GameObject{
         this.engine= engine;
         this.loadAnimMesh();
         this.setupPlayerCamera();
+        console.log(this.engine)
 
 
         // //Player Animation
@@ -238,7 +239,6 @@ class PlayerController extends GameObject{
     }
 
     setupPlayerCamera() {
-
         //root camera parent that handles positioning of the camera to follow the player
         this._camRoot = new TransformNode("root");
         this._camRoot.position = new Vector3(0, 0, 0); //initialized at (0,0,0)
@@ -253,13 +253,10 @@ class PlayerController extends GameObject{
         yTilt.parent = this._camRoot;
 
         //our actual camera that's pointing at our root's position
-        this.camera = new UniversalCamera("cam", new Vector3(0, 0, -30), this.scene);
-        // this.camera= new FreeCamera("cam", new Vector3.Zero(), this.scene )
-         this.camera.lockedTarget = this._camRoot.position;
+        this.camera = new UniversalCamera("cam", new Vector3(0, -2, -20), this.scene);
+        this.camera.lockedTarget = this._camRoot.position;
         this.camera.fov = 0.47350045992678597;
-         // this.camera.attachControl(this.scene);
         this.camera.parent = yTilt;
-
         this.scene.activeCamera = this.camera;
         return this.camera;
     }
