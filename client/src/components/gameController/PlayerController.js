@@ -127,6 +127,11 @@ class PlayerController extends GameObject{
             this.currentAnimation.state={
                 id: this.socket.id,
                 animation: this.currentAnimation.name,
+                x: this.player.mesh.position.x,
+                y: this.player.mesh.position.y,
+                z: this.player.mesh.position.z,
+                rW: this.player.mesh.rotationQuaternion.w,
+                rY: this.player.mesh.rotationQuaternion.y,
                 room: this.value,
             }
             this.socket.emit("playAnimation", this.currentAnimation.state)

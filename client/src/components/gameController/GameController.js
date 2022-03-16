@@ -39,6 +39,7 @@ class GameController {
     handleSocket(scene,socket){
         socket.on("newPlayerCreated",(data)=>{
             this.createPlayer(scene,socket,data)
+            console.log("Player")
             });
         socket.on("anotherPlayerMove", (data)=>{
             this.player= this.players[data.id];
@@ -137,16 +138,16 @@ class GameController {
         this.environment= environment;
         await this.environment.load()
         await this.loadCharacterAsync(scene,socket)
-        await this.handleSocket(scene,socket)
+        this.handleSocket(scene,socket)
     }
 
-     loadCharacterAsync(scene,socket){
+    loadCharacterAsync(scene,socket){
         const light0 = new DirectionalLight("dir01", new Vector3(-1, -2, -1), scene);
         light0.position = new Vector3(20, 40, 20);
         // light0.intensity = 0.9;
         // const light0 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
         // light0.intensity=0.8;
-         this.createPlayer(scene,socket)
+       this.createPlayer(scene,socket)
     }
 
    createPlayer(scene,socket,data){
@@ -168,7 +169,6 @@ class GameController {
 
             //Create the player
             this.player =  new PlayerCreator( this.engine, shadowGenerator);
-
             this.player.state={
                 id: socket.id,
                 x: this.player.mesh.position.x,
@@ -188,9 +188,10 @@ class GameController {
             }
             if(data){
              this.players[data.id]= this.player;
-             this.player.setState(data);
              this.player.loadMesh()
-                this.player.startSocket= true;
+             this.player.setState(data);
+             this.player.startSocket= true;
+             console.log(this.players)
             }else{
               socket.emit("playerCreated", this.player.state);
                   this.input= new InputController(socket,this.player, this.value);
