@@ -12,6 +12,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {authenticate} from "./redux/auth/authSlice";
 import {WebSocketProvider} from "./WebSocketProvider";
 import Game from "./components/pages/Game";
+import Loading from "./components/layout/Loading";
+import {toggleLoading} from "./redux/app/appSlice";
 
 
 
@@ -23,31 +25,38 @@ const App= ()=>{
         state.auth)
     const{ profile }= useSelector((state)=>
         state.profile)
+    const {loading}=useSelector((state)=>
+        state.app)
 
     useEffect(() => {
+        console.log(loading)
         dispatch(authenticate({}));
         if(user){
             navigate('/menu')
         }
+        setTimeout(()=>{
+            dispatch(toggleLoading())
+        },1000)
     }, []);
     return(
         <>
-            {!gaming?(
-                    <Layout>
-                        <Routes>
-                            <Route path='/' element={<Landing/>} />
-                            <Route path='/login' element={<Login/>} />
-                            <Route path='/register' element={<Register/>} />
-                            <Route path='/menu' element={<MainMenu/>} />
-                            <Route path="*" element={<Error404/>} />
-                        </Routes>
-                        <ToastContainer />
-                    </Layout>
+            {loading?(<Loading loading={loading}/> ): !gaming?(
+                <Layout>
+                <Routes>
+                <Route path='/' element={<Landing/>} />
+                <Route path='/login' element={<Login/>} />
+                <Route path='/register' element={<Register/>} />
+                <Route path='/menu' element={<MainMenu/>} />
+                <Route path="*" element={<Error404/>} />
+                </Routes>
+                <ToastContainer />
+                </Layout>
                 ):(
                 <Routes>
-                    <Route path='/game' element={<Game/>} />
+                <Route path='/game' element={<Game/>} />
                 </Routes>
                 )
+
             }
         </>
     );

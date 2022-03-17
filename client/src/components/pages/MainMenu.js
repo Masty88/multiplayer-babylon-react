@@ -26,7 +26,7 @@ const MainMenu = () => {
         }
     },[user,profile])
 
-    if(isLoading) return <Loading/>
+    if(isLoading) return <Loading loading={isLoading}/>
 
     return (
         <>
