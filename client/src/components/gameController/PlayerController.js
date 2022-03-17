@@ -3,11 +3,11 @@ import GameObject from "./GameObject";
 
 import {
     ArcRotateCamera, Color3,
-    Color4,
+    Color4, DirectionalLight,
     FreeCamera,
     Matrix, Mesh,
     MeshBuilder, Observable, PointerEventTypes,
-    Quaternion, Ray,
+    Quaternion, Ray, ShadowGenerator,
     StandardMaterial, TransformNode, UniversalCamera,
     Vector3
 } from "@babylonjs/core";
@@ -27,20 +27,18 @@ class PlayerController extends GameObject{
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
     playerAnimation;
 
-    constructor(input,player, value, engine) {
+    constructor(input,player, value, engine,light,shadowGenerator) {
         super();
         this.isJumping = false;
         this.player= player
         this.input = input;
         this.value= value
         this.engine= engine;
+        this.light=light
+        this.shadowGenerator= shadowGenerator;
         this.loadAnimMesh();
         this.setupPlayerCamera();
-        console.log(this.engine)
-
-
-        // //Player Animation
-        this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
+        // this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
     }
 
     updateFromControl(){
@@ -89,6 +87,8 @@ class PlayerController extends GameObject{
 
     async loadAnimMesh(){
         this.player.rigMesh=await this.player.loadMesh();
+        this.shadowGenerator.addShadowCaster(this.player.rigMesh.mesh); //the player mesh will cast shadows
+        this.shadowGenerator.darkness=0.3;
         this.idle= this.player.mesh.idle;
         this.landing= this.player.mesh.landing;
         this.walking= this.player.mesh.walking;
@@ -137,11 +137,6 @@ class PlayerController extends GameObject{
             }
             this.socket.emit("playAnimation", this.currentAnimation.state)
         }
-
-        // else{
-        //     this.currentAnimation.state.animation= null;
-        //     this.socket.emit("playAnimation", this.currentAnimation.state);
-        // }
     }
 
     floorRayCast(offsetx, offsetz, raycastlen){
@@ -253,7 +248,7 @@ class PlayerController extends GameObject{
         yTilt.parent = this._camRoot;
 
         //our actual camera that's pointing at our root's position
-        this.camera = new UniversalCamera("cam", new Vector3(0, -2, -20), this.scene);
+        this.camera = new UniversalCamera("cam", new Vector3(0, 0, -20), this.scene);
         this.camera.lockedTarget = this._camRoot.position;
         this.camera.fov = 0.47350045992678597;
         this.camera.parent = yTilt;

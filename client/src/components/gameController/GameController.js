@@ -29,7 +29,7 @@ class GameController {
         this.changeScene= changeScene
         this.logout=logout
         this.dispatch= dispatch;
-        this.engine= engine
+        this.engine= engine;
         this.value= value;
         this.players={};
         this.handleScene(scene,socket)
@@ -46,16 +46,12 @@ class GameController {
             this.player.setState(data)
         })
         socket.on("anotherPlayerAnimated",(data)=>{
-            console.log(data)
             this.player= this.players[data.id];
             if(data.animation !== null){
                 this.player.mesh[data.animation].loopAnimation= true
                 this.player.mesh[data.animation].stop()
                 this.player.mesh[data.animation].play(this.player.mesh[data.animation].loopAnimation)
             }
-
-             // const animation= this.player.rigMesh.animationGroups.filter(animation=> animation.name === data.animation);
-            // animation[0].play(animation[0].loopAnimation)
         })
     }
 
@@ -77,8 +73,9 @@ class GameController {
         camera.setTarget(Vector3.Zero());
 
         //create a fullscreen ui for all of our GUI elements
-        const guiMenu = AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        guiMenu.idealHeight = 720; //fit our fullscreen ui to this height
+         const guiMenu = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+         console.log(guiMenu)
+        // guiMenu.idealHeight = 720; //fit our fullscreen ui to this height
 
         //create a simple button
         const startBtn = Button.CreateSimpleButton("start", "PLAY");
@@ -88,7 +85,7 @@ class GameController {
         startBtn.top = "-14px";
         startBtn.thickness = 0;
         startBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-        guiMenu.addControl(startBtn);
+         guiMenu.addControl(startBtn);
 
         //this handles interactions with the start button attached to the scene
         startBtn.onPointerDownObservable.add(() => {
@@ -133,7 +130,7 @@ class GameController {
     }
 
     async setUpGame(scene,socket){
-        const ui= new uiController(this.dispatch,this.logout, socket )
+         const ui= new uiController(this.dispatch,this.logout, socket )
         const environment= new EnvironmentController(scene)
         this.environment= environment;
         await this.environment.load()
@@ -142,33 +139,19 @@ class GameController {
     }
 
     loadCharacterAsync(scene,socket){
-        const light0 = new DirectionalLight("dir01", new Vector3(-1, -2, -1), scene);
-        light0.position = new Vector3(20, 40, 20);
-        // light0.intensity = 0.9;
-        // const light0 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
-        // light0.intensity=0.8;
-       this.createPlayer(scene,socket)
+        this.light0 = new DirectionalLight("dir01", new Vector3(-1, -2, -1), scene);
+        this.light0.position = new Vector3(20, 40, 0);
+        this.light0.intensity = 5;
+        const light1 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
+        light1.intensity=0.8;
+        this.shadowGenerator= new ShadowGenerator(1000,this.light0)
+        this.createPlayer(scene,socket)
     }
 
-   createPlayer(scene,socket,data){
+   async createPlayer(scene,socket,data){
+        //Create the player
 
-         const light = new PointLight("sparklight", new Vector3(-2, 5, 2), scene);
-         light.diffuse = new Color3(0.08627450980392157, 0.10980392156862745, 0.15294117647058825);
-         light.intensity = 10;
-         light.radius = 1;
-
-         var lightSphere2 = Mesh.CreateSphere("sphere", 10, 2, scene);
-         lightSphere2.position = light.position;
-         lightSphere2.material = new StandardMaterial("light", scene);
-         lightSphere2.material.emissiveColor = new Color3(1, 1, 0);
-
-
-         const shadowGenerator = new ShadowGenerator(1024, light);
-         // const shadowGenerator2 = new ShadowGenerator(1024, light0);
-            shadowGenerator.darkness = 100;
-
-            //Create the player
-            this.player =  new PlayerCreator( this.engine, shadowGenerator);
+            this.player =  new PlayerCreator( this.engine,this.light0);
             this.player.state={
                 id: socket.id,
                 x: this.player.mesh.position.x,
@@ -188,18 +171,20 @@ class GameController {
             }
             if(data){
              this.players[data.id]= this.player;
-             this.player.loadMesh()
+             console.log(this.players.length)
+             this.rigMesh=await this.player.loadMesh();
+             // console.log(this.rigMesh)
+             // this.shadowGenerator2=new ShadowGenerator(1000,this.light0);
+             this.shadowGenerator.addShadowCaster(this.rigMesh.mesh)
              this.player.setState(data);
              this.player.startSocket= true;
-             console.log(this.players)
             }else{
               socket.emit("playerCreated", this.player.state);
                   this.input= new InputController(socket,this.player, this.value,this.engine);
-                  this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine);
-                  this.player.controller.activatePlayerCamera();
-                 this.player.startSocket= true;
+                  this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine,this.light0,this.shadowGenerator);
+                  this.player.controller.activatePlayerCamera()
+                  this.player.startSocket= true;
             }
-
     }
 
 }

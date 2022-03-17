@@ -5,8 +5,8 @@
   "private": true,
   "dependencies": {
     "@babylonjs/core": "^4.2.2",
-    "@babylonjs/gui": "^4.2.1",
-    "@babylonjs/loaders": "^4.2.1",
+    "@babylonjs/gui": "^4.2.2",
+    "@babylonjs/loaders": "^4.2.2",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.4.2",

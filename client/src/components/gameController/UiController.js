@@ -53,7 +53,6 @@ class UiController extends GameObject{
         this.result.thickness= 0;
         this.result.left= left;
 
-
         //Adding Text
         this.textBlock= new TextBlock(name +"_button", text)
         this.textBlock.resizeToFit= true;
@@ -64,7 +63,6 @@ class UiController extends GameObject{
         this.result.addControl(this.textBlock);
 
         return this.result
-
     }
 
 }
