@@ -15,6 +15,8 @@ const StartTown= () => {
     const {ws} = useWebSocket();
     const{value} = useSelector((state)=> state.game)
     const{user}=useSelector(state=>state.auth)
+    const{ profile}= useSelector((state)=>
+        state.profile)
 
     useEffect(()=>{
         if(!user){
@@ -22,6 +24,7 @@ const StartTown= () => {
             dispatch(toggleGaming(false))
         }
     },[user])
+
 
     const onSceneReady = async (scene,engine) => {
         let game = new GameController(scene, ws, engine, value, dispatch, changeState(),logout());

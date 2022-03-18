@@ -42,12 +42,9 @@ class InputController extends GameObject{
         if (this.inputMap["ArrowLeft"]) {
             this.horizontal = Scalar.Lerp(this.horizontal, -1, 0.2);
             this.horizontalAxis = -1;
-            console.log("here")
-
         } else if (this.inputMap["ArrowRight"]) {
             this.horizontal = Scalar.Lerp(this.horizontal, 1, 0.2);
             this.horizontalAxis = 1;
-            console.log("here")
         }
         else {
             this.horizontal = 0;
@@ -57,12 +54,9 @@ class InputController extends GameObject{
         if (this.inputMap["ArrowUp"]) {
             this.vertical = Scalar.Lerp(this.vertical, 1, 0.2);
             this.verticalAxis = 1;
-            console.log("here")
-
         } else if (this.inputMap["ArrowDown"]) {
             this.vertical = Scalar.Lerp(this.vertical, -1, 0.2);
             this.verticalAxis = -1;
-            console.log("here")
         } else {
             this.vertical = 0;
             this.verticalAxis = 0;

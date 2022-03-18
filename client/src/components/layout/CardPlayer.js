@@ -22,7 +22,7 @@ const CardPlayer = ({path,selected,onChange}) => {
                 >
                     <CardMedia
                         component="video"
-                        image= 'avatar/girlPres.webm?autoplay=1&mute'
+                        image= 'avatar/liz_vid.webm?autoplay=1&mute'
                         alt="random"
                          sx={{
                              width:"220%",

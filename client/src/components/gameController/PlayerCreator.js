@@ -34,8 +34,9 @@ class PlayerCreator extends GameObject{
     }
 
      loadMesh(shadowGenerator, shadowGenerator2){
-        return SceneLoader.ImportMeshAsync(null,"/assets/","girl.glb", this.scene).then((result)=>{
+        return SceneLoader.ImportMeshAsync(null,"/assets/","magda.glb", this.scene).then((result)=>{
             const root = result.meshes[0];
+            console.log(result.animationGroups)
             //body is our actual player mesh
             this.body = root;
             this.body.parent = this.mesh;
@@ -45,8 +46,9 @@ class PlayerCreator extends GameObject{
                 m.receiveShadows= true;
             })
             this.mesh.idle= result.animationGroups[0];
-            this.mesh.landing= result.animationGroups[1];
-            this.mesh.walking= result.animationGroups[2];
+            this.mesh.jumping= result.animationGroups[1];
+            this.mesh.landing= result.animationGroups[2];
+            this.mesh.running= result.animationGroups[3];
             this.mesh.FinishedLoad=true
             if(this.mesh.FinishedLoad){
                 this.engine.hideLoadingUI();

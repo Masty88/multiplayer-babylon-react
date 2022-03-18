@@ -17,7 +17,7 @@ import {
 
 class PlayerController extends GameObject{
 
-    static PLAYER_SPEED= 0.10;
+    static PLAYER_SPEED= 0.2;
     static GRAVITY = -2.8;
     static JUMP_FORCE = 0.8;
     static DASH_FACTOR= 2.5;
@@ -90,7 +90,8 @@ class PlayerController extends GameObject{
         this.shadowGenerator.darkness=0.3;
         this.idle= this.player.mesh.idle;
         this.landing= this.player.mesh.landing;
-        this.walking= this.player.mesh.walking;
+        this.running= this.player.mesh.running;
+        this.jumping= this.player.mesh.jumping;
         this.currentAnimation= null;
         this.isFalling= false;
         this.setUpAnimations()
@@ -100,7 +101,8 @@ class PlayerController extends GameObject{
         this.scene.stopAllAnimations();
        this.idle.loopAnimation= true;
        this.landing.loopAnimation= true;
-       this.walking.loopAnimation=true;
+       this.running.loopAnimation=true;
+       this.jumping.loopAnimation= true
        this.currentAnimation= this.idle;
        this.prevAnimation= this.landing;
 
@@ -111,14 +113,17 @@ class PlayerController extends GameObject{
             (this.input.inputMap["ArrowUp"] || this.input.inputMap["ArrowDown"] ||
             this.input.inputMap["ArrowLeft"] || this.input.inputMap["ArrowRight"]
             )){
-            this.currentAnimation= this.walking;
+            this.currentAnimation= this.running;
              this.isAnimating= true
             this.isIdle= false
         }else if(!this.isFalling && this.grounded){
             this.currentAnimation= this.idle;
              this.isIdle=true
             this.isAnimating= false;
+        }else if(this.isJumping && !this.isFalling){
+            this.currentAnimation= this.jumping;
         }
+
 
         if(this.currentAnimation != null && this.prevAnimation !== this.currentAnimation){
             this.prevAnimation.stop();
