@@ -43,7 +43,6 @@ const Layout = ({children})=>{
 
     return(
         <>
-            <CssBaseline />
             <AppBar position="static">
                 <Toolbar sx={{
                     display: 'flex', justifyContent: 'space-between', alignItems: ' center' }}>
@@ -55,16 +54,16 @@ const Layout = ({children})=>{
                             </IconButton>)
                             : (
                                 <>
+                                <Link to='/login'>
                                     <IconButton>
-                                        <Link to='/login'>
-                                            <InputIcon sx={{ color: "white", marginRight: "15px" }}/>
-                                        </Link>
+                                            <InputIcon sx={{ color: "white"}}/>
                                     </IconButton>
+                                </Link>
+                                <Link to='/register'>
                                     <IconButton>
-                                        <Link to='/register'>
                                             <PersonAddAltIcon sx={{ color: "white" }}/>
-                                        </Link>
                                     </IconButton>
+                                </Link>
                                 </>
 
                             )}

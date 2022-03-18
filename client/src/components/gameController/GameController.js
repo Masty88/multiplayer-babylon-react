@@ -53,6 +53,18 @@ class GameController {
                 this.player.mesh[data.animation].play(this.player.mesh[data.animation].loopAnimation)
             }
         })
+
+        // window.onbeforeunload=()=>{
+        //    socket.emit("exit",socket.id);
+        //    socket.disconnect()
+        // }
+
+        socket.on("playerExit",(data)=>{
+            console.log(data)
+            this.player= this.players[data]
+            this.player.mesh.dispose();
+            delete this.players[data]
+        })
     }
 
     handleScene(scene,socket){
@@ -66,36 +78,20 @@ class GameController {
         }
     }
 
-    async goToStart(scene){
+    async goToStart(scene,socket){
         this.engine.displayLoadingUI();
         scene.clearColor=new Color4(0,0,0,1);
         let camera = new FreeCamera("camera1", new Vector3(0, 0, 0), scene);
         camera.setTarget(Vector3.Zero());
 
-        //create a fullscreen ui for all of our GUI elements
-         const guiMenu = AdvancedDynamicTexture.CreateFullscreenUI("UI");
-         console.log(guiMenu)
-        // guiMenu.idealHeight = 720; //fit our fullscreen ui to this height
-
-        //create a simple button
-        const startBtn = Button.CreateSimpleButton("start", "PLAY");
-        startBtn.width = 0.2
-        startBtn.height = "40px";
-        startBtn.color = "white";
-        startBtn.top = "-14px";
-        startBtn.thickness = 0;
-        startBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-         guiMenu.addControl(startBtn);
-
-        //this handles interactions with the start button attached to the scene
-        startBtn.onPointerDownObservable.add(() => {
-            this.changeScene.payload="START_CITY"
-            this.dispatch(this.changeScene);
-        });
-
+         if(socket.connected){
+             this.changeScene.payload="START_CITY"
+             this.dispatch(this.changeScene);
+         }
         //--SCENE FINISHED LOADING--
         await scene.whenReadyAsync();
         this.engine.hideLoadingUI();
+        scene.dispose()
     }
 
 

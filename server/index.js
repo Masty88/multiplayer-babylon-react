@@ -77,11 +77,13 @@ io.on('connect', socket => {
 
     socket.on("logout",data=>{
         console.log('User Disconnect', socket.id)
-        delete (players[socket.id])
+        delete players[socket.id];
+        socket.broadcast.emit("playerExit", socket.id)
     })
     socket.on("disconnect",  (data)=> {
         console.log('User Disconnect', socket.id)
-        delete (players[socket.id])
+        delete players[socket.id];
+        socket.broadcast.emit("playerExit", socket.id)
     });
 
 });

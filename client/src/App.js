@@ -23,8 +23,6 @@ const App= ()=>{
     const{gaming}= useSelector((state)=>state.app)
     const{ user }= useSelector((state)=>
         state.auth)
-    const{ profile }= useSelector((state)=>
-        state.profile)
     const {loading}=useSelector((state)=>
         state.app)
 
@@ -42,21 +40,19 @@ const App= ()=>{
         <>
             {loading?(<Loading loading={loading}/> ): !gaming?(
                 <Layout>
-                <Routes>
-                <Route path='/' element={<Landing/>} />
-                <Route path='/login' element={<Login/>} />
-                <Route path='/register' element={<Register/>} />
-                <Route path='/menu' element={<MainMenu/>} />
-                <Route path="*" element={<Error404/>} />
-                </Routes>
-                <ToastContainer />
+                 <Routes>
+                  <Route path='/' element={<Landing/>} />
+                  <Route path='/login' element={<Login/>} />
+                  <Route path='/register' element={<Register/>} />
+                  <Route path='/menu' element={<MainMenu/>} />
+                  <Route path="*" element={<Error404/>} />
+                  </Routes>
+                  <ToastContainer />
                 </Layout>
                 ):(
                 <Routes>
-                <Route path='/game' element={<Game/>} />
-                </Routes>
-                )
-
+                  <Route path='/game' element={<Game/>} />
+                </Routes>)
             }
         </>
     );

@@ -57,7 +57,6 @@ class PlayerController extends GameObject{
 
         this.moveDirection = new Vector3(move.normalize().x, 0, move.normalize().z);
 
-
         //clamp the input value so that diagonal movement isn't twice as fast
         let inputMag = Math.abs(this.h) + Math.abs(this.v);
         if (inputMag < 0) {
@@ -246,7 +245,6 @@ class PlayerController extends GameObject{
         yTilt.rotation = new Vector3(0.5934119456780721, 0, 0);
         this._yTilt = yTilt;
         yTilt.parent = this._camRoot;
-
         //our actual camera that's pointing at our root's position
         this.camera = new UniversalCamera("cam", new Vector3(0, 0, -20), this.scene);
         this.camera.lockedTarget = this._camRoot.position;

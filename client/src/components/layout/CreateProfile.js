@@ -74,16 +74,16 @@ const CreateProfile = (props) => {
 
     return (
         <Container component="main">
-                <Box component="form" onSubmit={handleSubmit} >
+                <Box component="form" onSubmit={handleSubmit} sx={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
                     <Grid container spacing={8}>
                         {cards.map((card,index) => (
                             <Grid item key={card.id} xs={12} md={4}>
-                             <CardPlayer path={card.path} selected={isSelected === index} onChange={()=>handleClick(card,index)} />
+                             <CardPlayer path={card.path} selected={isSelected == index} onChange={()=>handleClick(card,index)} />
                             </Grid>
                         ))}
                     </Grid>
 
-                    <Grid container spacing={2} sx={{marginTop: "80px"}}>
+                    <Grid container spacing={8} sx={{marginTop: "80px"}}>
                         <Grid item xs={4} md={4}></Grid>
                         <Grid item xs={4} md={4}></Grid>
                         <Grid item xs={4} md={4}>
@@ -91,7 +91,7 @@ const CreateProfile = (props) => {
                                            type="submit"
                                            loading={isLoading}
                                            fullWidth>
-                                Register</LoadingButton>
+                                Play</LoadingButton>
                         </Grid>
                     </Grid>
                 </Box>
