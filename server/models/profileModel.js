@@ -7,7 +7,8 @@ const ProfileSchema = new mongoose.Schema({
         ref: 'user'
     },
     mesh:{
-        type: String
+        type: String,
+        required: true
     }
 })
 

@@ -14,6 +14,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true,'Please add a password']
     },
+    connected:{
+        type: Boolean,
+    }
 },{
     timestamps: true
 })

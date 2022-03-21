@@ -27,7 +27,6 @@ const App= ()=>{
         state.app)
 
     useEffect(() => {
-        console.log(loading)
         dispatch(authenticate({}));
         if(user){
             navigate('/menu')
