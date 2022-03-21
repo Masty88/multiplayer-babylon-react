@@ -23,11 +23,13 @@ import CardPlayer from "./CardPlayer";
 const cards=[
     {
         id:1,
-        path: "mypath1"
+        path: "avatar/liz_vid.webm?autoplay=1&mute",
+        mesh:"liz.glb"
     },
     {
         id:2,
-        path: "mypath2"
+        path: "avatar/magda_vid.webm?autoplay=1&mute",
+        mesh: "magda.glb"
     },
     {
         id:3,
@@ -68,7 +70,7 @@ const CreateProfile = (props) => {
     }
 
     const handleClick=(card,index)=>{
-        setMesh(card.path)
+        setMesh(card.mesh)
         setSelected(index)
     }
 

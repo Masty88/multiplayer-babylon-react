@@ -60,7 +60,7 @@ io.on('connect', socket => {
         console.log(`new Player Created with ${data.id}`)
         players[data.id]=data;
         socket.to(data.room).emit("newPlayerCreated", data)
-         console.log(players)
+         console.log("player",players)
         for(let key in players){
             if(key === socket.id) continue;
             socket.emit("newPlayerCreated", players[key])

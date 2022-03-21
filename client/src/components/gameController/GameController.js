@@ -21,11 +21,12 @@ import uiController from "./UiController";
 
 class GameController {
 
-    constructor(scene,socket,engine,value,dispatch,changeScene,logout) {
+    constructor(scene,socket,engine,value,dispatch,changeScene,logout, profile) {
         // Initialization
         GameObject.GameController = this;
         GameObject.Scene = scene;
         GameObject.Socket= socket
+        this.profile=profile;
         this.changeScene= changeScene
         this.logout=logout
         this.dispatch= dispatch;
@@ -39,7 +40,6 @@ class GameController {
     handleSocket(scene,socket){
         socket.on("newPlayerCreated",(data)=>{
             this.createPlayer(scene,socket,data)
-            console.log("Player")
             });
         socket.on("anotherPlayerMove", (data)=>{
             this.player= this.players[data.id];
@@ -60,7 +60,6 @@ class GameController {
         // }
 
         socket.on("playerExit",(data)=>{
-            console.log(data)
             this.player= this.players[data]
             this.player.mesh.dispose();
             delete this.players[data]
@@ -146,8 +145,7 @@ class GameController {
 
    async createPlayer(scene,socket,data){
         //Create the player
-
-            this.player =  new PlayerCreator( this.engine,this.light0);
+            this.player =  new PlayerCreator( this.engine);
             this.player.state={
                 id: socket.id,
                 x: this.player.mesh.position.x,
@@ -156,6 +154,7 @@ class GameController {
                 rW: this.player.mesh.rotationQuaternion.w,
                 rY: this.player.mesh.rotationQuaternion.y,
                 room: this.value,
+                mesh: this.profile.mesh,
             }
             this.player.setState=(data)=>{
                 this.player.mesh.position.x = data.x;
@@ -164,27 +163,23 @@ class GameController {
                 this.player.mesh.rotationQuaternion.w= data.rW;
                 this.player.mesh.rotationQuaternion.y= data.rY;
                 this.player.state.room=this.value;
+                this.player.state.mesh= this.profile.mesh;
             }
             if(data){
              this.players[data.id]= this.player;
-             console.log(this.players.length)
-             this.rigMesh=await this.player.loadMesh();
-             // console.log(this.rigMesh)
-             // this.shadowGenerator2=new ShadowGenerator(1000,this.light0);
+             this.rigMesh=await this.player.loadMesh(data.mesh);
              this.shadowGenerator.addShadowCaster(this.rigMesh.mesh)
              this.player.setState(data);
              this.player.startSocket= true;
             }else{
               socket.emit("playerCreated", this.player.state);
                   this.input= new InputController(socket,this.player, this.value,this.engine);
-                  this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine,this.light0,this.shadowGenerator);
+                  this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine,this.light0,this.shadowGenerator,this.profile.mesh);
                   this.player.controller.activatePlayerCamera()
                   this.player.startSocket= true;
             }
     }
 
 }
-
-
 
 export default GameController;

@@ -27,8 +27,9 @@ class PlayerController extends GameObject{
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
     playerAnimation;
 
-    constructor(input,player, value, engine,light,shadowGenerator) {
+    constructor(input,player, value, engine,light,shadowGenerator,profile) {
         super();
+        this.profile= profile
         this.isJumping = false;
         this.player= player
         this.input = input;
@@ -36,7 +37,7 @@ class PlayerController extends GameObject{
         this.engine= engine;
         this.light=light
         this.shadowGenerator= shadowGenerator;
-        this.loadAnimMesh();
+        this.loadAnimMesh(this.profile);
         this.setupPlayerCamera();
         // this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
     }
@@ -85,7 +86,7 @@ class PlayerController extends GameObject{
     }
 
     async loadAnimMesh(){
-        this.player.rigMesh=await this.player.loadMesh();
+        this.player.rigMesh=await this.player.loadMesh(this.profile);
         this.shadowGenerator.addShadowCaster(this.player.rigMesh.mesh); //the player mesh will cast shadows
         this.shadowGenerator.darkness=0.3;
         this.idle= this.player.mesh.idle;
@@ -138,6 +139,7 @@ class PlayerController extends GameObject{
                 rW: this.player.mesh.rotationQuaternion.w,
                 rY: this.player.mesh.rotationQuaternion.y,
                 room: this.value,
+                mesh: this.profile,
             }
             this.socket.emit("playAnimation", this.currentAnimation.state)
         }
