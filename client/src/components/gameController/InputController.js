@@ -16,7 +16,6 @@ class InputController extends GameObject{
 
     constructor(socket, player, value, engine) {
         super();
-        console.log("activate input")
         this.value= value
         this.player= player;
 
@@ -71,12 +70,13 @@ class InputController extends GameObject{
 
         //Jump Checks (SPACE)
         if (this.inputMap["e"]) {
-            this.freeCam= new ArcRotateCamera("Camera", Math.PI / 2, 0, 2, Vector3.Zero(), this.scene);
+            this.freeCam= new ArcRotateCamera("Camera", Math.PI/2 , 0, 2, Vector3.Zero(), this.scene);
             this.freeCam.inputs.attached.keyboard.detachControl()
             this.freeCam.checkCollisions=true
             this.freeCam.setPosition(new Vector3(0,5,0))
             this.freeCam.target= this.player.mesh.position;
-            this.freeCam.upperRadiusLimit=50;
+            this.freeCam.upperRadiusLimit=20;
+            this.freeCam.lowerRadiusLimit=5;
             this.freeCam.attachControl(this.engine.getRenderingCanvas(),true)
             this.scene.activeCamera= this.freeCam;
         } else if(this.inputMap["r"] || this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
@@ -92,7 +92,6 @@ class InputController extends GameObject{
         }
 
         if(this.notifyServer){
-            console.log("here")
             this.player.state.x= this.player.mesh.position.x;
             this.player.state.y= this.player.mesh.position.y;
             this.player.state.z= this.player.mesh.position.z;

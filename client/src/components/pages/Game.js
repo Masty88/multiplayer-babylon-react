@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {toggleLoading} from "../../redux/app/appSlice";
 import StartTown from "../gameComponents/StartTown";
 import StartScene from "../gameComponents/StartScene";
+import Desert from "../gameComponents/Desert";
 
 let city
 
@@ -26,6 +27,8 @@ const Game = () => {
         case "START_CITY":
             city=<StartTown/>
             break;
+        case "DESERT":
+            city=<Desert/>
         default: break;
     }
 

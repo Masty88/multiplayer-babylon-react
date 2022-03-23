@@ -52,18 +52,23 @@ const players={}
 
 io.on('connect', socket => {
     console.log('connected');
-    socket.on("join_start_town", (room)=>{
-        socket.join(room)
-        console.log(`User with ${socket.id} joined room ${room}`)
+    socket.on("join_start_town", (data)=>{
+        socket.join(data.room)
+        console.log(`User with ${socket.id} joined room ${data.room}`)
+        // await User.findOneAndUpdate({id:data.userId},{connected:true})
     })
     socket.on("playerCreated",(data)=>{
-        console.log(`new Player Created with ${data.id}`)
+        // console.log(`new Player Created with ${data.id} in ${data.room}`)
         players[data.id]=data;
         socket.to(data.room).emit("newPlayerCreated", data)
-         console.log("player",players)
-        for(let key in players){
-            if(key === socket.id) continue;
-            socket.emit("newPlayerCreated", players[key])
+        const clients=io.sockets.adapter.rooms.get(data.room);
+        const numClients = clients ? clients.size : 0;
+        for (const clientId of clients) {
+            const clientSocket = io.sockets.sockets.get(clientId);
+            console.log(clientSocket.rooms)
+                if(clientId === socket.id || players[clientId].room !== data.room ) continue;
+                socket.emit("newPlayerCreated", players[clientId])
+                console.log("here")
         }
     })
     socket.on("playerMove",(data)=>{
@@ -77,11 +82,14 @@ io.on('connect', socket => {
 
     socket.on("logout",data=>{
         console.log('User Disconnect', socket.id)
+        socket.leave(data)
+        console.log('User leave', data)
         delete players[socket.id];
         socket.broadcast.emit("playerExit", socket.id)
     })
     socket.on("disconnect",  (data)=> {
         console.log('User Disconnect', socket.id)
+        // await User.findOneAndUpdate({id:players[socket.id].userId},{connected:false})
         delete players[socket.id];
         socket.broadcast.emit("playerExit", socket.id)
     });

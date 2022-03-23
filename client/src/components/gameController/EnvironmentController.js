@@ -13,22 +13,15 @@ import "@babylonjs/loaders/glTF";
 import {blue} from "@mui/material/colors";
 
 class EnvironmentController extends GameObject{
-    constructor() {
+    constructor(city) {
         super();
+        this.city= city;
     }
     async load(){
         // let ground = MeshBuilder.CreateBox("ground", {size:44}, this.scene)
         // ground.scaling = new Vector3(1,.01,1);
         // ground.receiveShadows= true;
-        // Skybox
-        const skybox = MeshBuilder.CreateBox("skyBox", {size: 1000.0}, this.scene);
-        const skyboxMaterial = new StandardMaterial("skyBox", this.scene);
-        skyboxMaterial.backFaceCulling = false;
-        // skyboxMaterial.reflectionTexture = new CubeTexture("textures/skybox", this.scene);
-        // skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
-        skyboxMaterial.diffuseColor = new Color3.Blue();
-        skyboxMaterial.specularColor = new Color3(0, 0, 0);
-        skybox.material = skyboxMaterial;
+
         const assets = await this.loadAsset();
         assets.allMeshes.forEach(mesh=>{
             mesh.receiveShadows = true;
@@ -38,7 +31,7 @@ class EnvironmentController extends GameObject{
     }
 
     async loadAsset(){
-        const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "start_town_blend.glb", this.scene)
+        const result= await SceneLoader.ImportMeshAsync(null,"/assets/", this.city, this.scene)
         let env = result.meshes[0];
         let allMeshes = env.getChildMeshes();
 

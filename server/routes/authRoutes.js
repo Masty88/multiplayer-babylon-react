@@ -54,13 +54,13 @@ router.post('/',[
         }
 
         if(user && isMatch){
-        user.updateOne({email},
+        await User.findOneAndUpdate({email},
         {connected:true})
        }
 
-        if(user.connected){
-            return  res.status(400).json({ errors: [{msg: "Game already open in an other terminal"}]})
-        }
+        // if(user.connected){
+        //     return  res.status(400).json({ errors: [{msg: "Game already open in an other terminal"}]})
+        // }
 
         // if(connected){
         //    console.log("already log in")

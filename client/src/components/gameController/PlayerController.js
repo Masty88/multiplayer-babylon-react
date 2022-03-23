@@ -227,15 +227,13 @@ class PlayerController extends GameObject{
     updateCamera(){
         //trigger areas for rotating camera view
         // if (this.player.mesh.intersectsMesh(this.scene.getMeshByName("cornerTrigger_primitive1"))) {
-        //     if (this.input.horizontalAxis > 0) { //rotates to the right
-        //         console.log("here")
-        //         this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, Math.PI / 2, this._camRoot.rotation.z), 0.4);
-        //     } else if (this.input.horizontalAxis < 0) { //rotates to the left
-        //         this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, Math.PI, this._camRoot.rotation.z), 0.4);
-        //     }
+            if (this.input.horizontalAxis > 0) { //rotates to the right
+                this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, Math.PI / 4, this._camRoot.rotation.z), 0.1);
+            } else if (this.input.horizontalAxis < 0) { //rotates to the left
+                this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, -Math.PI/4, this._camRoot.rotation.z), 0.1);
+            }
         // }
-
-        let centerPlayer = this.player.mesh.position.y + 2;
+        let centerPlayer = this.player.mesh.position.y + 1;
         this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x, centerPlayer, this.player.mesh.position.z), 0.4);
     }
 
@@ -253,9 +251,12 @@ class PlayerController extends GameObject{
         this._yTilt = yTilt;
         yTilt.parent = this._camRoot;
         //our actual camera that's pointing at our root's position
-        this.camera = new UniversalCamera("cam", new Vector3(0, 0, -20), this.scene);
+        this.camera = new UniversalCamera("cam", new Vector3(0, -8, -20), this.scene);
+        this.camera.ellipsoid = new Vector3(1, 1, 1);
+        this.camera.checkCollisions= true;
         this.camera.lockedTarget = this._camRoot.position;
-        this.camera.fov = 0.47350045992678597;
+        // this.camera.fov = 0.47350045992678597;
+        this.camera.fov = 0.35;
         this.camera.parent = yTilt;
         this.scene.activeCamera = this.camera;
         return this.camera;

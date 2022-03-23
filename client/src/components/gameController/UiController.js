@@ -14,14 +14,15 @@ import {Color3} from "@babylonjs/core";
 
 
 class UiController extends GameObject{
-    constructor(dispatch,logout,socket, data) {
+    constructor(dispatch,logout,socket,changeScene, value ) {
         super();
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.playerUI = playerUI;
         this.dispatch= dispatch;
         this.logout=logout;
         this.socket= socket;
-        this.data= data
+        this.changeScene= changeScene;
+        this.value= value
         // this.loadUi()
 
         this.containerTop= new Rectangle();
@@ -59,8 +60,8 @@ class UiController extends GameObject{
             this.logoutButton.background="Black"
         });
          this.logoutButton.onPointerDownObservable.add(() => {
-            socket.emit("logout", data);
-            socket.removeAllListeners();
+            socket.emit("logout", this.value);
+            socket.disconnect();
            this.dispatch(this.logout)
         });
 
@@ -108,20 +109,19 @@ class UiController extends GameObject{
     }
 
     createMenu(){
-        this.result= new Dropdown(this.playerUI,"40px", "60px","white", "black");
+        this.result= new Dropdown(this.playerUI,"40px", "60px","white", "black", this.changeScene);
         this.result.left="0px";
         this.result.top="15px";
-        this.result.addOption(0, "Option E");
-        this.result.addOption(1, "Option F");
-        this.result.addOption(2, "Option G");
+        this.result.addOption(this.value,this.socket,this.dispatch,this.changeScene,0, "DESERT");
         return this.result
     }
 
 }
 
 const Dropdown = (function () {
-    function Dropdown(advancedTexture, height, width, color, background) {
+    function Dropdown(advancedTexture, height, width, color, background, changeScene) {
         // Members
+        this.changeScene= changeScene
         this.height = height;
         this.width = width;
         this.color = color || "black";
@@ -140,7 +140,7 @@ const Dropdown = (function () {
         this.button = Button.CreateSimpleButton(null, "City");
         this.button.height = this.height;
         this.button.cornerRadius= 5;
-        this.button.fontSize="15px"
+        this.button.fontSize="12px"
         this.button.background = this.background;
         this.button.color = this.color;
         this.button.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
@@ -148,7 +148,7 @@ const Dropdown = (function () {
         // Options panel
         this.options = new StackPanel();
         this.options.cornerRadius= 5;
-        this.options.fontSize="15px"
+        this.options.fontSize="12px"
         this.options.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
          this.options.top = this.height;
         this.options.isVisible = false;
@@ -189,7 +189,7 @@ const Dropdown = (function () {
         enumerable: true,
         configurable: true
     });
-    Dropdown.prototype.addOption = function (value, text, color, background) {
+    Dropdown.prototype.addOption = function (room,socket,dispatch,action,value, text, color, background) {
         const _this = this;
         const button =  Button.CreateSimpleButton(text, text);
         button.height = _this.height;
@@ -201,7 +201,11 @@ const Dropdown = (function () {
             _this.button.children[0].text = text;
             _this.selected = button;
             _this.selectedValue = value;
-            console.log("here")
+            action.payload=_this.button.children[0].text;
+            socket.removeAllListeners()
+            socket.emit("logout",room);
+            //socket.leave(this.value)
+            dispatch(action);
         });
         this.options.addControl(button);
     };
