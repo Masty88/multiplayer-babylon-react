@@ -58,12 +58,10 @@ const App= ()=>{
 }
 
 const AppContainer=()=>(
-    <WebSocketProvider
-        url={process.env.REACT_APP_API_URL}>
+
         <Router>
                 <App/>
         </Router>
-    </WebSocketProvider>
 
     )
 

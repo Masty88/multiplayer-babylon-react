@@ -3,10 +3,11 @@ import {useWebSocket} from "../../WebSocketProvider";
 import {changeState} from "../../redux/game/gameStateSlice";
 import SceneComponent from "./SceneComponent";
 import GameController from "../gameController/GameController";
-import {logout} from "../../redux/auth/authSlice";
+import {logout, reset} from "../../redux/auth/authSlice";
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {toggleGaming} from "../../redux/app/appSlice";
+import {resetProfile} from "../../redux/profile/profileSlice";
 
 
 const StartTown= () => {
@@ -25,9 +26,17 @@ const StartTown= () => {
         }
     },[user])
 
-
     const onSceneReady = async (scene,engine) => {
-        let game = new GameController(scene, ws, engine, value, dispatch, changeState(),logout(), profile, user.user.id, "START_CITY");
+        let game = new GameController(scene,
+            ws,
+            engine,
+            value,
+            dispatch,
+            changeState(),
+            logout({}),
+            resetProfile(),
+            profile,
+            user.user._id);
     };
 
     return (

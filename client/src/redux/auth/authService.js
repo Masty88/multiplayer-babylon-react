@@ -37,8 +37,17 @@ const authenticate = async (token)=>{
 
 
 //Logout user
-const logout=()=>{
-    localStorage.removeItem('user')
+const logout=async(token)=>{
+    const config={
+        headers: {
+            'x-auth-token': token,
+        },
+    }
+    const response= await axios.get('api/auth/logout', config);
+    if(response.data){
+        localStorage.removeItem('user')
+    }
+    return response.data
 }
 
 const authService={

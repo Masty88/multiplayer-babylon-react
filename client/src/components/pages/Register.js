@@ -35,7 +35,7 @@ const Register = () => {
         }
 
         if (isSuccess || user) {
-            navigate('/main')
+            navigate('/menu')
         }
 
         dispatch(reset())
@@ -56,14 +56,14 @@ const Register = () => {
     }
 
     if(isLoading){
-        return <Loading/>
+        return <Loading loading={isLoading}/>
     }
 
     return (
             <Container component="main" maxWidth="xs">
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: 0,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',

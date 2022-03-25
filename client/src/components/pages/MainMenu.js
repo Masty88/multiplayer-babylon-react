@@ -10,7 +10,7 @@ import {toggleGaming, toggleLoading} from "../../redux/app/appSlice";
 const MainMenu = () => {
     const dispatch= useDispatch()
     const navigate = useNavigate();
-    const{ profile,isLoading}= useSelector((state)=>
+    const{ profile,isLoading, isSuccess}= useSelector((state)=>
         state.profile)
     const {user}=useSelector((state)=>
         state.auth)
@@ -20,11 +20,11 @@ const MainMenu = () => {
     useEffect(()=>{
       dispatch(getProfile({}))
         if(!user)navigate('/')
-        if(profile){
+        if(isSuccess){
          dispatch(toggleGaming(true));
          navigate('/game')
         }
-    },[user,profile])
+    },[profile])
 
     if(isLoading) return <Loading loading={isLoading}/>
 

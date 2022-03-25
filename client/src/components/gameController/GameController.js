@@ -21,7 +21,7 @@ import uiController from "./UiController";
 
 class GameController {
 
-    constructor(scene,socket,engine,value,dispatch,changeScene,logout, profile,user, fixValue) {
+    constructor(scene,socket,engine,value,dispatch,changeScene,logout,resetProfile,profile,user) {
         // Initialization
         GameObject.GameController = this;
         GameObject.Scene = scene;
@@ -29,41 +29,28 @@ class GameController {
         scene.collisionsEnabled= true;
         this.profile=profile;
         this.user=user;
-        this.changeScene= changeScene
-        this.logout=logout
+        this.changeScene= changeScene;
+        this.logout=logout;
+        this.resetProfile= resetProfile;
         this.dispatch= dispatch;
         this.engine= engine;
         this.value= value;
-        this.fixValue= fixValue;
         this.players={};
         this.handleScene(scene,socket)
     }
 
 
     handleSocket(scene,socket){
-        this.roomCheck=this.player.state.room
-        console.log(this.roomCheck)
-        console.log(this.value)
         socket.on("newPlayerCreated",(data)=>{
-            if(this.roomCheck == data.room){
-                console.log("1", this.roomCheck)
-                console.log("2", data.room)
                 this.createPlayer(scene,socket,data)
-            } else{
-                console.log("3", this.roomCheck)
-                console.log("4", data.room)
-                console.log("nnoo")
-            }
             });
         socket.on("anotherPlayerMove", (data)=>{
-            if(this.roomCheck == data.room){
                 this.player= this.players[data.id];
                 this.player.setState(data)
-            }
         })
         socket.on("anotherPlayerAnimated",(data)=>{
             this.player= this.players[data.id];
-            if(data.animation !== null && this.roomCheck == data.room){
+            if(data.animation !== null){
                 this.player.mesh[data.animation].loopAnimation= true
                 this.player.mesh[data.animation].stop()
                 this.player.mesh[data.animation].play(this.player.mesh[data.animation].loopAnimation)
@@ -106,11 +93,11 @@ class GameController {
         scene.clearColor=new Color4(0,0,0,1);
         let camera = new FreeCamera("camera1", new Vector3(0, 0, 0), scene);
         camera.setTarget(Vector3.Zero());
+        console.log(socket)
 
-         if(socket.connected){
              this.changeScene.payload="START_CITY"
              this.dispatch(this.changeScene);
-         }
+
         //--SCENE FINISHED LOADING--
         await scene.whenReadyAsync();
         this.engine.hideLoadingUI();
@@ -149,7 +136,7 @@ class GameController {
     }
 
     async setUpGame(scene,socket){
-         const ui= new uiController(this.dispatch,this.logout, socket,this.changeScene,this.value)
+         const ui= new uiController(this.dispatch,this.logout, socket,this.changeScene,this.value, this.resetProfile)
         const environment= new EnvironmentController(this.city)
         this.environment= environment;
         await this.environment.load()
@@ -170,6 +157,7 @@ class GameController {
    async createPlayer(scene,socket,data){
         //Create the player
             this.player =  new PlayerCreator( this.engine);
+            console.log(this.user)
             this.player.state={
                 id: socket.id,
                 userId: this.user,
@@ -188,6 +176,7 @@ class GameController {
                 this.player.mesh.rotationQuaternion.w= data.rW;
                 this.player.mesh.rotationQuaternion.y= data.rY;
                 this.player.state.room=data.room;
+                this.player.state.userId= data.userId;
                 this.player.state.mesh= this.profile.mesh;
             }
             if(data ){

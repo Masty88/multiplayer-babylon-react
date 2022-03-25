@@ -14,12 +14,13 @@ import {Color3} from "@babylonjs/core";
 
 
 class UiController extends GameObject{
-    constructor(dispatch,logout,socket,changeScene, value ) {
+    constructor(dispatch,logout,socket,changeScene, value, resetProfile ) {
         super();
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.playerUI = playerUI;
         this.dispatch= dispatch;
         this.logout=logout;
+        this.resetProfile= resetProfile;
         this.socket= socket;
         this.changeScene= changeScene;
         this.value= value
@@ -61,8 +62,8 @@ class UiController extends GameObject{
         });
          this.logoutButton.onPointerDownObservable.add(() => {
             socket.emit("logout", this.value);
-            socket.disconnect();
-           this.dispatch(this.logout)
+           this.dispatch(this.logout);
+           this.dispatch(this.resetProfile)
         });
 
 

@@ -33,42 +33,37 @@ const io = new Server(httpServer,{
     }
 })
 
-// io.use(async (socket, next) => {
-//     try {
-//         const { token } = socket.handshake.auth;
-//         console.log(token)
-//         const {id} = await jwt.verify(token, process.env.JWT_SECRET );
-//         const user = await User.findOne({ id });
-//         socket.user= user
-//         next();
-//     }
-//     catch(err) {
-//         console.log(err)
-//         next(new Error('Not authenticated'));
-//     }
-// });
+io.use(async (socket, next) => {
+    try {
+        const { token, userConnected } = socket.handshake.auth;
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET );
+        const user = decoded.user
+        socket.user= user
+        next();
+    }
+    catch(err) {
+        console.log(err)
+        next(new Error('Not authenticated'));
+    }
+});
 
 const players={}
 
+
 io.on('connect', socket => {
     console.log('connected');
-    socket.on("join_start_town", (data)=>{
+    const userId= socket.user.id;
+    socket.on("join_start_town",async (data)=>{
         socket.join(data.room)
-        console.log(`User with ${socket.id} joined room ${data.room}`)
-        // await User.findOneAndUpdate({id:data.userId},{connected:true})
+        //console.log(`User with ${socket.id} joined room ${data.room}`)
+        await User.updateOne({_id:userId},{connected:true});
     })
     socket.on("playerCreated",(data)=>{
-        // console.log(`new Player Created with ${data.id} in ${data.room}`)
         players[data.id]=data;
         socket.to(data.room).emit("newPlayerCreated", data)
-        const clients=io.sockets.adapter.rooms.get(data.room);
-        const numClients = clients ? clients.size : 0;
-        for (const clientId of clients) {
-            const clientSocket = io.sockets.sockets.get(clientId);
-            console.log(clientSocket.rooms)
-                if(clientId === socket.id || players[clientId].room !== data.room ) continue;
-                socket.emit("newPlayerCreated", players[clientId])
-                console.log("here")
+        for ( let key in players) {
+                if(key === socket.id || players[key].room !== data.room) continue;
+                socket.emit("newPlayerCreated", players[key])
         }
     })
     socket.on("playerMove",(data)=>{
@@ -80,18 +75,17 @@ io.on('connect', socket => {
         socket.to(data.room).emit("anotherPlayerAnimated",data)
     })
 
-    socket.on("logout",data=>{
-        console.log('User Disconnect', socket.id)
+    socket.on("logout",async data=>{
         socket.leave(data)
-        console.log('User leave', data)
         delete players[socket.id];
+        await User.updateOne({_id:userId},{connected:false});
         socket.broadcast.emit("playerExit", socket.id)
     })
-    socket.on("disconnect",  (data)=> {
-        console.log('User Disconnect', socket.id)
-        // await User.findOneAndUpdate({id:players[socket.id].userId},{connected:false})
+    socket.on("disconnect",  async (data)=> {
+        await User.updateOne({_id:userId},{connected:false});
         delete players[socket.id];
         socket.broadcast.emit("playerExit", socket.id)
+        socket.disconnect()
     });
 
 });

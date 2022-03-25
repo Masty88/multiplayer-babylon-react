@@ -5,7 +5,7 @@ import {orange, purple, red} from "@mui/material/colors";
 const theme = createTheme({
     palette: {
         mode: 'dark',
-        primary: orange,
+        primary: red,
     },
     components: {
         MuiCssBaseline: {
@@ -14,17 +14,20 @@ const theme = createTheme({
                     width: '100vw',
                     height: '100vh',
                     overflow: 'hidden',
+                    textDecoration: "none",
                 },
                 body: {
                     width: '100vw',
                     height: '100vh',
-                    overflowX: 'hidden',
+                    overflow: 'hidden',
+                    textDecoration: "none",
                 },
                 '#root': {
                     display: 'flex',
                     flexDirection: 'column',
                     width: '100vw',
                     height: '100vh',
+                    textDecoration: "none",
                 }
             }
         }

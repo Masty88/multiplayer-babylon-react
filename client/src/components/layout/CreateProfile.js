@@ -33,7 +33,8 @@ const cards=[
     },
     {
         id:3,
-        path: "mypath3"
+        path: "avatar/tony_vid.webm?autoplay=1&mute",
+        mesh: "tony.glb"
     }
 ]
 

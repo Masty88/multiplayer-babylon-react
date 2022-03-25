@@ -5,6 +5,7 @@ import {toggleLoading} from "../../redux/app/appSlice";
 import StartTown from "../gameComponents/StartTown";
 import StartScene from "../gameComponents/StartScene";
 import Desert from "../gameComponents/Desert";
+import {WebSocketProvider} from "../../WebSocketProvider";
 
 let city
 
@@ -43,7 +44,10 @@ const Game = () => {
 
     return (
         <>
+            <WebSocketProvider
+                url={process.env.REACT_APP_API_URL}>
             {city}
+            </WebSocketProvider>
         </>
     );
 };

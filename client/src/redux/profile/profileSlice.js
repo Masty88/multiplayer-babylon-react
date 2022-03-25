@@ -39,8 +39,9 @@ export const profileSlice= createSlice({
         resetProfile:(state)=>{
             state.isLoading = false;
             state.isError = false;
+            state.isSuccess= false;
             state.message = "";
-        }
+        },
     },
     extraReducers:(builder)=> {
         builder
@@ -60,6 +61,7 @@ export const profileSlice= createSlice({
             })
             .addCase(getProfile.pending, (state) => {
                 state.isLoading = true
+                state.isSuccess = false;
             })
             .addCase(getProfile.fulfilled, (state, action) => {
                 state.isLoading = false;

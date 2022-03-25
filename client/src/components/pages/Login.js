@@ -50,7 +50,7 @@ const Login = () => {
         <Container component="main" maxWidth="xs">
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: 0,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -90,7 +90,7 @@ const Login = () => {
                                                disabled={ password.trim().length=== 0 || email.trim().length=== 0}
                                                fullWidth
                                 >
-                                    Register</LoadingButton>
+                                    LOGIN</LoadingButton>
                             </Grid>
                         </Grid>
                     </Box>

@@ -7,6 +7,7 @@ import {logout} from "../../redux/auth/authSlice";
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {toggleGaming} from "../../redux/app/appSlice";
+import {resetProfile} from "../../redux/profile/profileSlice";
 
 
 const Desert= () => {
@@ -27,7 +28,16 @@ const Desert= () => {
 
 
     const onSceneReady = async (scene,engine) => {
-        let game = new GameController(scene, ws, engine, value, dispatch, changeState(),logout(), profile, user.user.id, "DESERT");
+        let game = new GameController(scene,
+            ws,
+            engine,
+            value,
+            dispatch,
+            changeState(),
+            logout({}),
+            resetProfile(),
+            profile,
+            user.user.id);
     };
 
     return (
