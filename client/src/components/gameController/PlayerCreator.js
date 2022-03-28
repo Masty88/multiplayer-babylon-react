@@ -30,6 +30,9 @@ class PlayerCreator extends GameObject{
         //for collisions
         this.mesh.ellipsoid = new Vector3(1, 1.5, 1);
         this.mesh.ellipsoidOffset = new Vector3(0, 1.5, 0);
+        this.mesh.position.y=0;
+        this.mesh.position.x=Math.floor(Math.random()*3)
+        this.mesh.position.z=Math.floor(Math.random()*5)
         this.mesh.rotationQuaternion = new Quaternion(0, 1, 0, 0); // rotate the player mesh 180 since we want to see the back of the player
     }
 

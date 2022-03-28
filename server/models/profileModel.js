@@ -9,6 +9,13 @@ const ProfileSchema = new mongoose.Schema({
     mesh:{
         type: String,
         required: true
+    },
+    avatar:{
+        type: String,
+        required: true
+    },
+    tutorial:{
+        type:Boolean
     }
 })
 

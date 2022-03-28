@@ -21,14 +21,13 @@ import uiController from "./UiController";
 
 class GameController {
 
-    constructor(scene,socket,engine,value,dispatch,changeScene,logout,resetProfile,profile,user) {
+    constructor(scene,socket,engine,value,dispatch,changeScene,logout,resetProfile,profile) {
         // Initialization
         GameObject.GameController = this;
         GameObject.Scene = scene;
         GameObject.Socket= socket
         scene.collisionsEnabled= true;
         this.profile=profile;
-        this.user=user;
         this.changeScene= changeScene;
         this.logout=logout;
         this.resetProfile= resetProfile;
@@ -56,12 +55,6 @@ class GameController {
                 this.player.mesh[data.animation].play(this.player.mesh[data.animation].loopAnimation)
             }
         })
-
-        // window.onbeforeunload=()=>{
-        //    socket.emit("exit",socket.id);
-        //    socket.disconnect()
-        // }
-
         socket.on("playerExit",(data)=>{
             this.player= this.players[data]
             if(this.player){
@@ -95,8 +88,8 @@ class GameController {
         camera.setTarget(Vector3.Zero());
         console.log(socket)
 
-             this.changeScene.payload="START_CITY"
-             this.dispatch(this.changeScene);
+        this.changeScene.payload="START_CITY"
+        this.dispatch(this.changeScene);
 
         //--SCENE FINISHED LOADING--
         await scene.whenReadyAsync();
@@ -136,7 +129,7 @@ class GameController {
     }
 
     async setUpGame(scene,socket){
-         const ui= new uiController(this.dispatch,this.logout, socket,this.changeScene,this.value, this.resetProfile)
+         const ui= new uiController(this.dispatch,this.logout, socket,this.changeScene,this.value, this.resetProfile,this.profile)
         const environment= new EnvironmentController(this.city)
         this.environment= environment;
         await this.environment.load()
@@ -157,10 +150,8 @@ class GameController {
    async createPlayer(scene,socket,data){
         //Create the player
             this.player =  new PlayerCreator( this.engine);
-            console.log(this.user)
             this.player.state={
                 id: socket.id,
-                userId: this.user,
                 x: this.player.mesh.position.x,
                 y: this.player.mesh.position.y,
                 z: this.player.mesh.position.z,
@@ -176,7 +167,6 @@ class GameController {
                 this.player.mesh.rotationQuaternion.w= data.rW;
                 this.player.mesh.rotationQuaternion.y= data.rY;
                 this.player.state.room=data.room;
-                this.player.state.userId= data.userId;
                 this.player.state.mesh= this.profile.mesh;
             }
             if(data ){

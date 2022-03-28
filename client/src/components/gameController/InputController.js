@@ -68,22 +68,6 @@ class InputController extends GameObject{
             this.jumpKeyDown = false;
         }
 
-        //Jump Checks (SPACE)
-        if (this.inputMap["e"]) {
-            this.freeCam= new ArcRotateCamera("Camera", Math.PI/2 , 0, 2, Vector3.Zero(), this.scene);
-            this.freeCam.inputs.attached.keyboard.detachControl()
-            this.freeCam.checkCollisions=true
-            this.freeCam.setPosition(new Vector3(0,5,0))
-            this.freeCam.target= this.player.mesh.position;
-            this.freeCam.upperRadiusLimit=20;
-            this.freeCam.lowerRadiusLimit=5;
-            this.freeCam.attachControl(this.engine.getRenderingCanvas(),true)
-            this.scene.activeCamera= this.freeCam;
-        } else if(this.inputMap["r"] || this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
-            this.scene.activeCamera= this.player.controller.camera
-        }
-
-
         if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
             this.notifyServer= true;
         }

@@ -28,8 +28,8 @@ const Landing = () => {
     return (
         <>
             <Card sx={{
-                width:"100%",
-                minHeight:"100vh",
+                minWidth:"100%",
+                minHeight:"100%",
                 position:"absolute",
                 zIndex:-1,
                 top:0,
@@ -39,12 +39,13 @@ const Landing = () => {
                    image= "avatar/pres_game.webm?autoplay=1&mute"
                    alt="avatar video"
                    sx={{
-                       width:"100%",
-                       minHeight:"100vh",
-                       position: "absolute",
+                       minWidth:"100%",
+                       minHeight:"100%",
+                       position: "fixed",
                        opacity:"0.4",
+                       right:0,
+                       left:0
                    }}
-
                    autoPlay
                    muted
                    loop
@@ -57,7 +58,7 @@ const Landing = () => {
                 flexDirection:"column",
                 justifyContent:"flex-end"
             }}>
-                <Typography variant="h1" sx={{marginBottom:"35px"}}>
+                <Typography variant="h1" sx={{marginBottom:"35px"}} sm={{fontSize:"5px"}}>
                     Welcome to MyVerse
                 </Typography>
                 <Typography variant="h5" sx={{marginBottom:"35px"}} style={{fontWeight:100}}>

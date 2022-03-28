@@ -67,10 +67,6 @@ router.post('/',[
             return  res.status(400).json({ errors: [{msg: "Invalid credentials"}]})
         }
 
-        if(user && isMatch){
-        await User.findOneAndUpdate({email},
-        {connected:true})
-       }
 
         if(user.connected){
             return  res.status(400).json({ errors: [{msg: "Game already open in an other terminal"}]})

@@ -27,7 +27,10 @@ class EnvironmentController extends GameObject{
             mesh.receiveShadows = true;
             mesh.checkCollisions = true;
         })
-
+        this.scene.getMeshByID("limit").isVisible=false;
+        this.scene.getMeshByID("limit.2").isVisible=false;
+        this.scene.getMeshByID("limit.3").isVisible=false;
+        this.scene.getMeshByID("limit.4").isVisible=false;
     }
 
     async loadAsset(){

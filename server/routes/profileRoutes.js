@@ -42,11 +42,13 @@ router.post('/',protect,
             return res.status(400).json({ errors: errors.array()})
     }
 
-    const{mesh}= req.body;
+    const{mesh,avatar,tutorial}= req.body;
     // Get fields
     const profileFields = {};
     profileFields.user = req.user.id;
     if(mesh)profileFields.mesh= mesh;
+    if(avatar)profileFields.avatar= avatar;
+    if(tutorial)profileFields.tutorial=tutorial;
 
     try {
         //Check if profile exists

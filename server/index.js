@@ -6,6 +6,7 @@ const cors= require('cors')
 const { errorHandler } = require('./middleware/errorMiddleware')
 const connectDB = require('./config/db')
 const User = require('./models/userModel');
+const Profile = require('./models/profileModel');
 const jwt = require("jsonwebtoken");
 const port = process.env.PORT || 8000
 
@@ -51,7 +52,6 @@ const players={}
 
 
 io.on('connect', socket => {
-    console.log('connected');
     const userId= socket.user.id;
     socket.on("join_start_town",async (data)=>{
         socket.join(data.room)
@@ -68,6 +68,7 @@ io.on('connect', socket => {
     })
     socket.on("playerMove",(data)=>{
         players[data.id]= data;
+        console.log(data)
         socket.to(data.room).emit("anotherPlayerMove",data)
     })
     socket.on("playAnimation", (data)=>{
@@ -79,10 +80,13 @@ io.on('connect', socket => {
         socket.leave(data)
         delete players[socket.id];
         await User.updateOne({_id:userId},{connected:false});
+        await Profile.updateOne({user:userId},{tutorial:false});
         socket.broadcast.emit("playerExit", socket.id)
     })
     socket.on("disconnect",  async (data)=> {
+        console.log("disconnect")
         await User.updateOne({_id:userId},{connected:false});
+        await Profile.updateOne({user:userId},{tutorial:false});
         delete players[socket.id];
         socket.broadcast.emit("playerExit", socket.id)
         socket.disconnect()

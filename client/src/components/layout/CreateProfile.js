@@ -24,22 +24,27 @@ const cards=[
     {
         id:1,
         path: "avatar/liz_vid.webm?autoplay=1&mute",
-        mesh:"liz.glb"
+        mesh:"liz.glb",
+        avatar:"avatar/liz.png"
     },
     {
         id:2,
         path: "avatar/magda_vid.webm?autoplay=1&mute",
-        mesh: "magda.glb"
+        mesh: "magda.glb",
+        avatar:"avatar/magda.png"
     },
     {
         id:3,
         path: "avatar/tony_vid.webm?autoplay=1&mute",
-        mesh: "tony.glb"
+        mesh: "tony.glb",
+        avatar:"avatar/tony.png"
     }
 ]
 
 const CreateProfile = (props) => {
     const[mesh, setMesh]= useState("");
+    const[avatar,setAvatar]=useState("")
+    const tutorial= true;
     const [isSelected, setSelected] = useState("");
     const dispatch= useDispatch()
 
@@ -66,13 +71,16 @@ const CreateProfile = (props) => {
         e.preventDefault();
         const profileData={
             mesh,
+            avatar,
+            tutorial
         }
         dispatch(createProfile({profile:profileData}))
     }
 
     const handleClick=(card,index)=>{
-        setMesh(card.mesh)
-        setSelected(index)
+        setMesh(card.mesh);
+        setAvatar(card.avatar);
+        setSelected(index);
     }
 
     return (

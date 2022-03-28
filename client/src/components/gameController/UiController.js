@@ -14,7 +14,7 @@ import {Color3} from "@babylonjs/core";
 
 
 class UiController extends GameObject{
-    constructor(dispatch,logout,socket,changeScene, value, resetProfile ) {
+    constructor(dispatch,logout,socket,changeScene, value, resetProfile,profile) {
         super();
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.playerUI = playerUI;
@@ -24,7 +24,7 @@ class UiController extends GameObject{
         this.socket= socket;
         this.changeScene= changeScene;
         this.value= value
-        // this.loadUi()
+        this.profile= profile;
 
         this.containerTop= new Rectangle();
         this.containerTop.width= "100%"
@@ -38,23 +38,74 @@ class UiController extends GameObject{
         this.containerBottom.height= "64px";
         this.containerBottom.color= "transparent"
         playerUI.addControl(this.containerBottom)
+        console.log(this.profile.tutorial)
         this.containerBottom.verticalAlignment= Control.VERTICAL_ALIGNMENT_BOTTOM;
 
+        this.instructionButton=this.createButton("inst","Instruction","0","0");
+        this.instructionButton.width="90px";
+        this.containerBottom.addControl(this.instructionButton);
+        this.instructionButton.onPointerDownObservable.add(() => {
+            this.containerFull.notRenderable=false;
+        });
+
+        //Instruction
+       // if(this.profile.tutorial || this.showInstruction){
+            this.containerFull= new Rectangle();
+            this.containerFull.width= "100%"
+            this.containerFull.height= "100%";
+            this.containerFull.background= "rgba(0,0,0,0.9)"
+            if(!this.profile.tutorial){
+                this.containerFull.notRenderable=true;
+            }
+            playerUI.addControl(this.containerFull);
+
+            //Arrow instruction
+            this.arrowInstruction= this.createInstruction("arrow_inst", "instruction/arrow_instruction.png","Use arrow to move")
+            this.arrowInstruction.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            this.arrowInstruction.left="-10%"
+            this.containerFull.addControl(this.arrowInstruction);
+
+
+            //Jump instruction
+            this.jumpInstruction= this.createInstruction("arrow_inst", "instruction/spacebar_instruction.png","Use the spacebar to jump")
+            this.jumpInstruction.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_CENTER;
+            this.containerFull.addControl(this.jumpInstruction)
+
+            //Mouse instruction
+            this.mouseInstruction= this.createInstruction("arrow_inst", "instruction/mouse_instruction.png","Use the mouse to move the camera")
+            this.mouseInstruction.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_LEFT;
+            this.mouseInstruction.left="10%";
+            this.containerFull.addControl(this.mouseInstruction)
+
+            //Close Button
+            this.closeButton=this.createButton("close","I got it", "-60px")
+            this.containerFull.addControl(this.closeButton);
+            this.closeButton.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            this.closeButton.verticalAlignment= Control.VERTICAL_ALIGNMENT_BOTTOM;
+            this.closeButton.width= "200px";
+            this.closeButton.background= "green";
+            this.closeButton.top="-10%"
+            this.closeButton.onPointerDownObservable.add(() => {
+                this.containerFull.notRenderable=true;
+            });
+       // }
+
+        //Avatar
         this.avatar=this.createAvatar("test","30px")
         this.containerTop.addControl(this.avatar);
         this.avatar.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_LEFT;
 
+        //DropDown
         this.menu=this.createMenu();
         this.menu.verticalAlignment= Control.VERTICAL_ALIGNMENT_BOTTOM
         this.menu.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_LEFT
-        // this.containerBottom.addControl(this.menu);
+
 
         //Logout Button
-        this.logoutButton=this.createButton("logout","Logout", "-30px")
+        this.logoutButton=this.createButton("logout","Logout", "-50px")
         this.containerTop.addControl(this.logoutButton);
         this.logoutButton.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_RIGHT;
         this.logoutButton.onPointerEnterObservable.add(()=> {
-            console.log(this.logoutButton.background)
             this.logoutButton.background="Red"
         });
         this.logoutButton.onPointerOutObservable.add(()=> {
@@ -69,7 +120,7 @@ class UiController extends GameObject{
 
     }
 
-    createButton(name,text,left){
+    createButton(name,text,left,top){
         this.result= new Button(name);
         this.result.width = "60px";
         this.result.height = "40px";
@@ -78,6 +129,7 @@ class UiController extends GameObject{
         this.result.thickness= 0;
         this.result.cornerRadius= 5;
         this.result.left= left;
+
 
         //Adding Text
         this.textBlock= new TextBlock(name +"_button", text)
@@ -91,6 +143,33 @@ class UiController extends GameObject{
         return this.result
     }
 
+    createInstruction(name,path,text){
+        this.result= new Rectangle();
+        this.result.width = "250px";
+        this.result.height = "250px";
+        this.result.color = "white";
+        this.result.thickness= 0;
+        this.result.cornerRadius= 5;
+
+        //Adding image
+        this.arrowImage= new Image(name,path)
+        this.arrowImage.width="200px"
+        this.arrowImage.stretch= Image.STRETCH_UNIFORM;
+        //Adding Text
+        this.textBlock= new TextBlock("arrow_text", text);
+        this.textBlock.resizeToFit= true;
+        this.textBlock.fontSize="20px";
+        this.textBlock.paddingBottom="20px";
+        this.textBlock.color= "white";
+        this.textBlock.textWrapping=true
+        this.textBlock.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this.textBlock.verticalAlignment= Control.VERTICAL_ALIGNMENT_BOTTOM;
+        this.result.addControl(this.textBlock)
+        this.result.addControl(this.arrowImage)
+
+        return this.result;
+    }
+
     createAvatar(name,left){
         this.result= new Ellipse();
         this.result.width = "40px"
@@ -100,7 +179,7 @@ class UiController extends GameObject{
         this.result.left= left;
 
         //Adding image
-        this.image= new Image(name,"/avatar/girl.png")
+        this.image= new Image(name,this.profile.avatar)
         this.image.width="100px"
         this.image.stretch= Image.STRETCH_UNIFORM;
         this.image.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_CENTER
@@ -110,10 +189,11 @@ class UiController extends GameObject{
     }
 
     createMenu(){
-        this.result= new Dropdown(this.playerUI,"40px", "60px","white", "black", this.changeScene);
+        this.result= new Dropdown(this.playerUI,"40px", "90px","white", "black", this.changeScene);
         this.result.left="0px";
         this.result.top="15px";
         this.result.addOption(this.value,this.socket,this.dispatch,this.changeScene,0, "DESERT");
+        this.result.addOption(this.value,this.socket,this.dispatch,this.changeScene,0, "START_CITY");
         return this.result
     }
 
@@ -203,6 +283,7 @@ const Dropdown = (function () {
             _this.selected = button;
             _this.selectedValue = value;
             action.payload=_this.button.children[0].text;
+            console.log(action.payload)
             socket.removeAllListeners()
             socket.emit("logout",room);
             //socket.leave(this.value)

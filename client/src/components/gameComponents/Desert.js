@@ -8,12 +8,13 @@ import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {toggleGaming} from "../../redux/app/appSlice";
 import {resetProfile} from "../../redux/profile/profileSlice";
+import Loading from "../layout/Loading";
 
 
 const Desert= () => {
     const dispatch= useDispatch();
     const navigate= useNavigate()
-    const {ws} = useWebSocket();
+    const {ws, isConnected} = useWebSocket();
     const{value} = useSelector((state)=> state.game)
     const{user}=useSelector(state=>state.auth)
     const{ profile}= useSelector((state)=>
@@ -42,7 +43,9 @@ const Desert= () => {
 
     return (
         <>
-            <SceneComponent antialias onSceneReady={onSceneReady} id="my-canvas"/>
+            {isConnected?(
+                <SceneComponent antialias onSceneReady={onSceneReady} id="my-canvas"/>
+            ):(<Loading loading={isConnected}/> )}
         </>
     )
 

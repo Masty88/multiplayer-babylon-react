@@ -7,13 +7,15 @@ import {logout, reset} from "../../redux/auth/authSlice";
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {toggleGaming} from "../../redux/app/appSlice";
-import {resetProfile} from "../../redux/profile/profileSlice";
+import {createProfile, resetProfile} from "../../redux/profile/profileSlice";
+import Loading from "../layout/Loading";
 
 
 const StartTown= () => {
     const dispatch= useDispatch();
+    const tutorial=false;
     const navigate= useNavigate()
-    const {ws} = useWebSocket();
+    const {ws, isConnected} = useWebSocket();
     const{value} = useSelector((state)=> state.game)
     const{user}=useSelector(state=>state.auth)
     const{ profile}= useSelector((state)=>
@@ -26,7 +28,10 @@ const StartTown= () => {
         }
     },[user])
 
+    console.log(isConnected)
+
     const onSceneReady = async (scene,engine) => {
+
         let game = new GameController(scene,
             ws,
             engine,
@@ -36,12 +41,17 @@ const StartTown= () => {
             logout({}),
             resetProfile(),
             profile,
-            user.user._id);
+            user.user._id,
+            createProfile({profile:tutorial})
+            )
+
     };
 
     return (
         <>
-            <SceneComponent antialias onSceneReady={onSceneReady} id="my-canvas"/>
+            {isConnected?(
+                <SceneComponent antialias onSceneReady={onSceneReady} id="my-canvas"/>
+            ):(<Loading loading={isConnected}/> )}
         </>
     )
 

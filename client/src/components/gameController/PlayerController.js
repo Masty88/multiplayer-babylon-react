@@ -70,7 +70,18 @@ class PlayerController extends GameObject{
 
         //final movement that takes into consideration the inputs
         this.moveDirection = this.moveDirection.scaleInPlace(this._inputAmt * PlayerController.PLAYER_SPEED);
-
+        //Limit of our world
+        if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit"))){
+            this.player.mesh.position.z = this.player.mesh.position.z + 0.1;
+        }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.2"))){
+            this.player.mesh.position.z = this.player.mesh.position.z -0.1;
+        }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.3"))){
+            this.player.mesh.position.x = this.player.mesh.position.x -0.1;
+        }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.4"))){
+            this.scene.getMeshByID("limit.4").isVisible=false;
+            this.scene.getMeshByID("limit.4").isPickable=false;
+            this.player.mesh.position.x = this.player.mesh.position.x +0.1;
+        }
 
         //Rotations
         //check if there is movement to determine if rotation is needed
@@ -225,16 +236,14 @@ class PlayerController extends GameObject{
     }
 
     updateCamera(){
-        //trigger areas for rotating camera view
-        // if (this.player.mesh.intersectsMesh(this.scene.getMeshByName("cornerTrigger_primitive1"))) {
-            if (this.input.horizontalAxis > 0) { //rotates to the right
-                this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, Math.PI / 4, this._camRoot.rotation.z), 0.1);
-            } else if (this.input.horizontalAxis < 0) { //rotates to the left
-                this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, -Math.PI/4, this._camRoot.rotation.z), 0.1);
-            }
-        // }
+      //TODO find a good rotation
+            // if (this.input.verticalAxis > 0) { //rotates to the right
+            //     this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, Math.PI /  2, this._camRoot.rotation.z), 0.1);
+            // } else if (this.input.verticalAxis < 0) { //rotates to the left
+            //     this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, -Math.PI/2, this._camRoot.rotation.z), 0.1);
+            // }
         let centerPlayer = this.player.mesh.position.y + 1;
-        this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x, centerPlayer, this.player.mesh.position.z), 0.4);
+        this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x , centerPlayer, this.player.mesh.position.z ), 0.4);
     }
 
     setupPlayerCamera() {
@@ -247,14 +256,19 @@ class PlayerController extends GameObject{
         //rotations along the x-axis (up/down tilting)
         let yTilt = new TransformNode("ytilt");
         //adjustments to camera view to point down at our player
-        yTilt.rotation = new Vector3(0.5934119456780721, 0, 0);
+        yTilt.rotation = new Vector3(0, 0, 0);
         this._yTilt = yTilt;
         yTilt.parent = this._camRoot;
         //our actual camera that's pointing at our root's position
-        this.camera = new UniversalCamera("cam", new Vector3(0, -8, -20), this.scene);
-        this.camera.ellipsoid = new Vector3(1, 1, 1);
-        this.camera.checkCollisions= true;
+        this.camera=new ArcRotateCamera("Camera", 0, Math.PI/2,1, Vector3.Zero(), this.scene)
+        this.camera.position=new Vector3(0, 2, -15)
+        this.camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput")
         this.camera.lockedTarget = this._camRoot.position;
+        this.camera.attachControl(this.engine.getRenderingCanvas(),true)
+        this.camera.upperRadiusLimit=35;
+        this.camera.lowerRadiusLimit=10;
+        this.camera.upperBetaLimit=1.5;
+
         // this.camera.fov = 0.47350045992678597;
         this.camera.fov = 0.35;
         this.camera.parent = yTilt;
