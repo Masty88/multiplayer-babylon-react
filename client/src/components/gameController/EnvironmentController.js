@@ -21,6 +21,7 @@ class EnvironmentController extends GameObject{
         // let ground = MeshBuilder.CreateBox("ground", {size:44}, this.scene)
         // ground.scaling = new Vector3(1,.01,1);
         // ground.receiveShadows= true;
+        this.createBonusPortail()
 
         const assets = await this.loadAsset();
         assets.allMeshes.forEach(mesh=>{
@@ -36,7 +37,6 @@ class EnvironmentController extends GameObject{
         this.scene.getMeshByID("limit.4").isVisible=false;
 
          */
-
     }
 
     async loadAsset(){
@@ -44,16 +44,17 @@ class EnvironmentController extends GameObject{
         let env = result.meshes[0];
         let allMeshes = env.getChildMeshes();
 
-        if(this.city=="start_town_blend.glb"){
-            console.log("city",this.city)
-            let portail=MeshBuilder.CreateBox("portail", {size:5}, this.scene);
-            portail.position= new Vector3(0,0,15);
-            portail.checkCollisions= true;
-        }
-
         return{
             env,
             allMeshes
+        }
+    }
+    createBonusPortail(){
+        if(this.city=="start_town_blend.glb"){
+            console.log("city",this.city)
+            let portail=MeshBuilder.CreateBox("portail", {size:5}, this.scene);
+            portail.position= new Vector3(0,0,-15);
+            // portail.checkCollisions= true;
         }
     }
 }

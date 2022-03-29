@@ -26,11 +26,15 @@ const MainMenu = () => {
         }
     },[profile])
 
-    if(isLoading) return <Loading loading={isLoading}/>
+    console.log(isLoading)
 
     return (
         <>
-            <CreateProfile/>
+            {isLoading?(
+                <Loading loading={isLoading}/>
+            ):(
+                <CreateProfile/>
+            )}
         </>
     );
 };

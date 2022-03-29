@@ -8,7 +8,7 @@ const initialState={
     profile: profile ? profile:null,
     isError: false,
     isSuccess: false,
-    isLoading: false,
+    isLoading: true,
     message:'',
 }
 
@@ -49,7 +49,7 @@ export const profileSlice= createSlice({
                 state.isLoading = true
             })
             .addCase(createProfile.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoading =true;
                 state.isSuccess = true;
                 state.profile = action.payload
             })
@@ -64,7 +64,7 @@ export const profileSlice= createSlice({
                 state.isSuccess = false;
             })
             .addCase(getProfile.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoading = true;
                 state.isSuccess = true;
                 state.profile = action.payload
             })

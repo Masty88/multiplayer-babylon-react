@@ -39,12 +39,14 @@ const Landing = () => {
                    image= "avatar/pres_game.webm?autoplay=1&mute"
                    alt="avatar video"
                    sx={{
-                       minWidth:"100%",
+                       minWidth:"120%",
                        minHeight:"100%",
                        position: "fixed",
                        opacity:"0.4",
                        right:0,
-                       left:0
+                       left:0,
+                       top:0,
+                       bottom:0,
                    }}
                    autoPlay
                    muted

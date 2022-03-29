@@ -74,6 +74,7 @@ class PlayerController extends GameObject{
         this.moveDirection = this.moveDirection.scaleInPlace(this._inputAmt * PlayerController.PLAYER_SPEED);
 
         //Limit of our world
+        /*
         if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit"))){
             this.player.mesh.position.z = this.player.mesh.position.z + 0.1;
         }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.2"))){
@@ -81,12 +82,12 @@ class PlayerController extends GameObject{
         }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.3"))){
             this.player.mesh.position.x = this.player.mesh.position.x -0.1;
         }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.4"))){
-            this.scene.getMeshByID("limit.4").isVisible=false;
-            this.scene.getMeshByID("limit.4").isPickable=false;
+            console.log("here")
             this.player.mesh.position.x = this.player.mesh.position.x +0.1;
-        }
+        }*/
 
         //Go to bonus game
+
         if(this.scene.getMeshByName("portail")){
             if(this.player.mesh.intersectsMesh(this.scene.getMeshByName("portail"))){
                 console.log("go to bonus game")
