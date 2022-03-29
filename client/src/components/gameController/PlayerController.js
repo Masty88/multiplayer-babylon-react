@@ -27,7 +27,7 @@ class PlayerController extends GameObject{
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
     playerAnimation;
 
-    constructor(input,player, value, engine,light,shadowGenerator,profile) {
+    constructor(input,player, value, engine,light,shadowGenerator,profile, dispatch, changeScene) {
         super();
         this.profile= profile
         this.isJumping = false;
@@ -37,6 +37,8 @@ class PlayerController extends GameObject{
         this.engine= engine;
         this.light=light
         this.shadowGenerator= shadowGenerator;
+        this.dispatch= dispatch;
+        this.changeScene= changeScene;
         this.loadAnimMesh(this.profile);
         this.setupPlayerCamera();
         // this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
@@ -70,6 +72,7 @@ class PlayerController extends GameObject{
 
         //final movement that takes into consideration the inputs
         this.moveDirection = this.moveDirection.scaleInPlace(this._inputAmt * PlayerController.PLAYER_SPEED);
+
         //Limit of our world
         if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit"))){
             this.player.mesh.position.z = this.player.mesh.position.z + 0.1;
@@ -81,6 +84,17 @@ class PlayerController extends GameObject{
             this.scene.getMeshByID("limit.4").isVisible=false;
             this.scene.getMeshByID("limit.4").isPickable=false;
             this.player.mesh.position.x = this.player.mesh.position.x +0.1;
+        }
+
+        //Go to bonus game
+        if(this.scene.getMeshByName("portail")){
+            if(this.player.mesh.intersectsMesh(this.scene.getMeshByName("portail"))){
+                console.log("go to bonus game")
+                this.socket.removeAllListeners()
+                this.socket.emit("logout",this.value);
+                this.changeScene.payload= "BONUS_GAME"
+                this.dispatch(this.changeScene);
+            }
         }
 
         //Rotations
