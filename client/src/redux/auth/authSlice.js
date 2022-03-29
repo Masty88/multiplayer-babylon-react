@@ -47,7 +47,6 @@ export const authenticate = createAsyncThunk('auth/authenticate',async ({}, thun
 export const logout = createAsyncThunk('auth/logout', async({},thunkApi)=>{
     try{
         const token = thunkApi.getState().auth.user.token
-        console.log(token)
         return await authService.logout(token)
     }catch(error){
         const message = error.response.data.errors[0].msg

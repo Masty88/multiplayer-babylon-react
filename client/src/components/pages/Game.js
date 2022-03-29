@@ -6,6 +6,7 @@ import StartTown from "../gameComponents/StartTown";
 import StartScene from "../gameComponents/StartScene";
 import Desert from "../gameComponents/Desert";
 import {WebSocketProvider} from "../../WebSocketProvider";
+import BonusGame from "../gameComponents/BonusGame";
 
 let city
 
@@ -30,6 +31,10 @@ const Game = () => {
             break;
         case "DESERT":
             city=<Desert/>
+            break;
+        case "BONUS_GAME":
+            city=<BonusGame/>
+            break;
         default: break;
     }
 

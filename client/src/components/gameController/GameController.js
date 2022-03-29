@@ -79,6 +79,10 @@ class GameController {
             this.city= "desert_town_blend.glb"
             socket.emit("join_start_town", {room:this.value, userId: this.user})
         }
+        if(this.value==="BONUS_GAME"){
+            this.goToCutScene(scene,socket,socket)
+            this.city= "bonus_game.glb"
+        }
     }
 
     async goToStart(scene,socket){
@@ -129,7 +133,8 @@ class GameController {
     }
 
     async setUpGame(scene,socket){
-         const ui= new uiController(this.dispatch,this.logout, socket,this.changeScene,this.value, this.resetProfile,this.profile)
+         const ui= new uiController(this.dispatch,
+             this.logout, socket,this.changeScene,this.value, this.resetProfile,this.profile)
         const environment= new EnvironmentController(this.city)
         this.environment= environment;
         await this.environment.load()
@@ -178,7 +183,16 @@ class GameController {
             }else{
               socket.emit("playerCreated", this.player.state);
                   this.input= new InputController(socket,this.player, this.value,this.engine);
-                  this.player.controller=  new PlayerController(this.input,this.player,this.value,this.engine,this.light0,this.shadowGenerator,this.profile.mesh);
+                  this.player.controller=  new PlayerController(this.input,
+                      this.player,
+                      this.value,
+                      this.engine,
+                      this.light0,
+                      this.shadowGenerator,
+                      this.profile.mesh,
+                      this.dispatch,
+                      this.changeScene
+                      );
                   this.player.controller.activatePlayerCamera()
                   this.player.startSocket= true;
             }

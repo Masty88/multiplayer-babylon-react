@@ -112,7 +112,7 @@ class UiController extends GameObject{
             this.logoutButton.background="Black"
         });
          this.logoutButton.onPointerDownObservable.add(() => {
-            socket.emit("logout", this.value);
+             socket.emit("logout", this.value);
            this.dispatch(this.logout);
            this.dispatch(this.resetProfile)
         });
@@ -283,7 +283,6 @@ const Dropdown = (function () {
             _this.selected = button;
             _this.selectedValue = value;
             action.payload=_this.button.children[0].text;
-            console.log(action.payload)
             socket.removeAllListeners()
             socket.emit("logout",room);
             //socket.leave(this.value)
