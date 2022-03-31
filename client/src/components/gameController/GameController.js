@@ -4,19 +4,15 @@ import PlayerController from "./PlayerController";
 import {
     Color3,
     Color4, DirectionalLight, FreeCamera,
-    HemisphericLight,
-    Matrix,
-    Mesh,
-    MeshBuilder, PointLight,
-    Quaternion, Scene, SceneLoader, ShadowGenerator, SpotLight,
-    StandardMaterial, UniversalCamera,
+    HemisphericLight, PointLight,
+    ShadowGenerator,
     Vector3
 } from "@babylonjs/core";
 import InputController from "./InputController";
 import PlayerCreator from "./PlayerCreator";
 import {AdvancedDynamicTexture, Button, Control} from "@babylonjs/gui";
-import UiController from "./UiController";
 import uiController from "./UiController";
+import UiBonusGameController from "./UiBonusGameController";
 
 
 class GameController {
@@ -72,16 +68,19 @@ class GameController {
         if(this.value=== "START_CITY" ){
             this.goToCutScene(scene,socket,socket)
             this.city= "start_town_blend.glb";
+            socket.connect();
             socket.emit("join_start_town", {room:this.value, userId: this.user})
         }
         if(this.value==="DESERT"){
             this.goToCutScene(scene,socket,socket)
+            socket.connect();
             this.city= "desert_town_blend.glb"
             socket.emit("join_start_town", {room:this.value, userId: this.user})
         }
         if(this.value==="BONUS_GAME"){
             this.goToCutScene(scene,socket,socket)
-            this.city= "bonus_game.glb"
+            this.city= "bonus_game.glb";
+            socket.disconnect();
         }
     }
 
@@ -108,53 +107,58 @@ class GameController {
         camera.setTarget(Vector3.Zero());
         scene.clearColor = new Color4(0, 0, 0, 1);
 
-        //--GUI--
-        const cutScene = AdvancedDynamicTexture.CreateFullscreenUI("cutscene");
-
-        //--PROGRESS DIALOGUE--
-        const next = Button.CreateSimpleButton("next", "loading...");
-        next.color = "white";
-        next.thickness = 0;
-        next.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-        next.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        next.width = "164px";
-        next.height = "64px";
-        next.top = "-3%";
-        next.left = "-12%";
-        cutScene.addControl(next)
-
         await scene.whenReadyAsync();
         let finishedLoading = false;
 
         await this.setUpGame(scene,socket).then(res =>{
-            cutScene.removeControl(next)
             finishedLoading = true;
         })
     }
 
     async setUpGame(scene,socket){
-         const ui= new uiController(this.dispatch,
-             this.logout, socket,this.changeScene,this.value, this.resetProfile,this.profile)
-        const environment= new EnvironmentController(this.city)
+        const ui= new uiController(this.dispatch, this.logout, socket,this.changeScene,this.value, this.resetProfile,this.profile)
+        const environment= new EnvironmentController(this.city,this.player)
         this.environment= environment;
         await this.environment.load()
         await this.loadCharacterAsync(scene,socket)
         this.handleSocket(scene,socket)
+        if(this.value==="BONUS_GAME") {
+            this.environment.checkLanterns(this.player);
+            const uiBonus = new UiBonusGameController(this.dispatch,this.changeScene);
+            scene.onBeforeRenderObservable.add(() => {
+                //reset the sparkler timer
+                if (this.player.sparkReset) {
+                    // ui.startSparklerTimer(this.player.sparkler);
+                    this.player.sparkReset = false;
+                    uiBonus.updateLanternCount(this.player.lanternsLit);
+                }
+                uiBonus.updateUI()
+            })
+        }
     }
 
     loadCharacterAsync(scene,socket){
-        this.light0 = new DirectionalLight("dir01", new Vector3(-1, -2, -1), scene);
-        this.light0.position = new Vector3(20, 40, 0);
-        this.light0.intensity = 5;
-        const light1 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
-        light1.intensity=0.8;
-        this.shadowGenerator= new ShadowGenerator(1000,this.light0)
+        if(this.value==="BONUS_GAME"){
+            //temporary light to light the entire scene
+            this.light1 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
+            this.light1.intensity=0.9
+            this.light0 = new PointLight("sparklight", new Vector3(0, 0, 0), scene);
+            this.light0.diffuse = new Color3(0.08627450980392157, 0.10980392156862745, 0.15294117647058825);
+            this.light0.intensity = 35;
+            this.light0.radius = 1;
+        }else{
+            this.light0 = new DirectionalLight("dir01", new Vector3(-1, -2, -1), scene);
+            this.light0.position = new Vector3(20, 40, 0);
+            this.light0.intensity = 5;
+            const light1 = new HemisphericLight("HemiLight", new Vector3(0, 1, 0), scene);
+            light1.intensity=0.8;
+        }
         this.createPlayer(scene,socket)
     }
 
    async createPlayer(scene,socket,data){
         //Create the player
-            this.player =  new PlayerCreator( this.engine);
+            this.player =  new PlayerCreator( this.engine,this.value);
             this.player.state={
                 id: socket.id,
                 x: this.player.mesh.position.x,
@@ -181,6 +185,7 @@ class GameController {
              this.player.setState(data);
              this.player.startSocket= true;
             }else{
+                this.shadowGenerator= new ShadowGenerator(1000,this.light0)
               socket.emit("playerCreated", this.player.state);
                   this.input= new InputController(socket,this.player, this.value,this.engine);
                   this.player.controller=  new PlayerController(this.input,
@@ -194,8 +199,8 @@ class GameController {
                       this.changeScene
                       );
                   this.player.controller.activatePlayerCamera()
-                  this.player.startSocket= true;
             }
+
     }
 
 }

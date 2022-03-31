@@ -1,21 +1,17 @@
 import GameObject from "./GameObject";
 import {
-    ArcRotateCamera, Color3,
-    Color4,
-    FreeCamera,
     Matrix, Mesh,
     MeshBuilder,
     Quaternion, Ray, SceneLoader, ShadowGenerator,
-    StandardMaterial, TransformNode, UniversalCamera,
     Vector3
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 
 class PlayerCreator extends GameObject{
-    constructor(engine) {
+    constructor(engine,value) {
         super();
         this.engine= engine;
-        // this.profile=profile;
+        this.value=value
         this.loadCharacterAssets()
     }
 
@@ -30,9 +26,13 @@ class PlayerCreator extends GameObject{
         //for collisions
         this.mesh.ellipsoid = new Vector3(1, 1.5, 1);
         this.mesh.ellipsoidOffset = new Vector3(0, 1.5, 0);
-        this.mesh.position.y=0;
-        this.mesh.position.x=Math.floor(Math.random()*3)
-        this.mesh.position.z=Math.floor(Math.random()*5)
+        if(this.value==="BONUS_GAME" && this.scene.getTransformNodeByName("startPosition")){
+            this.mesh.position=this.scene.getTransformNodeByName("startPosition").getAbsolutePosition()
+        }else{
+            this.mesh.position.y=0;
+            this.mesh.position.x=Math.floor(Math.random()*3)
+            this.mesh.position.z=Math.floor(Math.random()*5)
+        }
         this.mesh.rotationQuaternion = new Quaternion(0, 1, 0, 0); // rotate the player mesh 180 since we want to see the back of the player
     }
 

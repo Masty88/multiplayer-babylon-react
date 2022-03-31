@@ -2,8 +2,9 @@ import GameObject from "./GameObject";
 
 
 import {
+    ActionManager,
     ArcRotateCamera, Color3,
-    Color4, DirectionalLight,
+    Color4, DirectionalLight, ExecuteCodeAction,
     FreeCamera,
     Matrix, Mesh,
     MeshBuilder, Observable, PointerEventTypes,
@@ -22,6 +23,7 @@ class PlayerController extends GameObject{
     static JUMP_FORCE = 0.8;
     static DASH_FACTOR= 2.5;
     static DASH_TIME = 10;
+    static ORIGINAL_TILT = new Vector3(0.5934119456780721, 0, 0);
 
     gravity = new Vector3();
     lastGroundPos = Vector3.Zero(); // keep track of the last grounded position
@@ -41,7 +43,46 @@ class PlayerController extends GameObject{
         this.changeScene= changeScene;
         this.loadAnimMesh(this.profile);
         this.setupPlayerCamera();
-        // this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
+        this.bonusGameAction()
+    }
+
+    bonusGameAction(){
+        if(this.value==="BONUS_GAME"){
+            //--COLLISIONS--
+            this.player.mesh.actionManager = new ActionManager(this.scene);
+            //Platform destination
+            this.player.mesh.actionManager.registerAction(
+                new ExecuteCodeAction(
+                    {
+                        trigger: ActionManager.OnIntersectionEnterTrigger,
+                        parameter: this.scene.getMeshByName("destination")
+                    },
+                    () => {
+                        if(this.lanternsLit == 22){
+                            this.win = true;
+                            //tilt camera to look at where the fireworks will be displayed
+                            this._yTilt.rotation = new Vector3(5.689773361501514, 0.23736477827122882, 0);
+                            this._yTilt.position = new Vector3(0, 6, 0);
+                            this.camera.position.y = 17;
+                        }
+                    }
+                )
+            );
+
+            //World ground detection
+            //if player falls through "world", reset the position to the last safe grounded position
+            this.player.mesh.actionManager.registerAction(
+                new ExecuteCodeAction({
+                        trigger: ActionManager.OnIntersectionEnterTrigger,
+                        parameter: this.scene.getMeshByName("ground")
+                    },
+                    () => {
+                        this.player.mesh.position.copyFrom(new Vector3(51,20,104)); // need to use copy or else they will be both pointing at the same thing & update together
+                    }
+                )
+            );
+            this.scene.getLightByName("sparklight").parent = this.scene.getTransformNodeByName("Empty");
+        }
     }
 
     updateFromControl(){
@@ -70,11 +111,18 @@ class PlayerController extends GameObject{
             this._inputAmt = inputMag;
         }
 
+        //Super Powers in Bonus Game
+        if(this.value==="BONUS_GAME"){
+            PlayerController.PLAYER_SPEED=0.45
+            PlayerController.JUMP_FORCE=1.2
+        }else{
+            PlayerController.PLAYER_SPEED=PlayerController.PLAYER_SPEED;
+            PlayerController.JUMP_FORCE=PlayerController.JUMP_FORCE
+        }
         //final movement that takes into consideration the inputs
         this.moveDirection = this.moveDirection.scaleInPlace(this._inputAmt * PlayerController.PLAYER_SPEED);
 
         //Limit of our world
-        /*
         if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit"))){
             this.player.mesh.position.z = this.player.mesh.position.z + 0.1;
         }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.2"))){
@@ -82,16 +130,13 @@ class PlayerController extends GameObject{
         }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.3"))){
             this.player.mesh.position.x = this.player.mesh.position.x -0.1;
         }if(this.player.mesh.intersectsMesh(this.scene.getMeshByID("limit.4"))){
-            console.log("here")
             this.player.mesh.position.x = this.player.mesh.position.x +0.1;
-        }*/
+        }
 
         //Go to bonus game
 
-        if(this.scene.getMeshByName("portail")){
-            if(this.player.mesh.intersectsMesh(this.scene.getMeshByName("portail"))){
-                console.log("go to bonus game")
-                this.socket.removeAllListeners()
+        if(this.scene.getMeshByName("portal")){
+            if(this.player.mesh.intersectsMesh(this.scene.getMeshByName("portal"))){
                 this.socket.emit("logout",this.value);
                 this.changeScene.payload= "BONUS_GAME"
                 this.dispatch(this.changeScene);
@@ -150,7 +195,6 @@ class PlayerController extends GameObject{
         }else if(this.isJumping && !this.isFalling){
             this.currentAnimation= this.jumping;
         }
-
 
         if(this.currentAnimation != null && this.prevAnimation !== this.currentAnimation){
             this.prevAnimation.stop();
@@ -257,7 +301,7 @@ class PlayerController extends GameObject{
             // } else if (this.input.verticalAxis < 0) { //rotates to the left
             //     this._camRoot.rotation = Vector3.Lerp(this._camRoot.rotation, new Vector3(this._camRoot.rotation.x, -Math.PI/2, this._camRoot.rotation.z), 0.1);
             // }
-        let centerPlayer = this.player.mesh.position.y + 1;
+        let centerPlayer = this.player.mesh.position.y + 2;
         this._camRoot.position = Vector3.Lerp(this._camRoot.position, new Vector3(this.player.mesh.position.x , centerPlayer, this.player.mesh.position.z ), 0.4);
     }
 
@@ -271,21 +315,29 @@ class PlayerController extends GameObject{
         //rotations along the x-axis (up/down tilting)
         let yTilt = new TransformNode("ytilt");
         //adjustments to camera view to point down at our player
-        yTilt.rotation = new Vector3(0, 0, 0);
+        if(this.value==="BONUS_GAME"){
+            yTilt.rotation= PlayerController.ORIGINAL_TILT
+        }else{
+            yTilt.rotation = new Vector3(0, 0, 0);
+        }
         this._yTilt = yTilt;
         yTilt.parent = this._camRoot;
-        //our actual camera that's pointing at our root's position
-        this.camera=new ArcRotateCamera("Camera", 0, Math.PI/2,1, Vector3.Zero(), this.scene)
-        this.camera.position=new Vector3(0, 2, -15)
-        this.camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput")
-        this.camera.lockedTarget = this._camRoot.position;
-        this.camera.attachControl(this.engine.getRenderingCanvas(),true)
-        this.camera.upperRadiusLimit=35;
-        this.camera.lowerRadiusLimit=10;
-        this.camera.upperBetaLimit=1.5;
-
-        // this.camera.fov = 0.47350045992678597;
-        this.camera.fov = 0.35;
+        if(this.value ==="BONUS_GAME"){
+            this.camera= new UniversalCamera("cam", new Vector3(0,0,-30),this.scene);
+            this.camera.fov = 0.47350045992678597;
+            this.camera.fov = 0.47350045992678597;
+        }else{
+            //our actual camera that's pointing at our root's position
+            this.camera=new ArcRotateCamera("Camera", 0, Math.PI/2,1, Vector3.Zero(), this.scene)
+            this.camera.position=new Vector3(0, 2, -15)
+            this.camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput")
+            this.camera.lockedTarget = this._camRoot.position;
+            this.camera.attachControl(this.engine.getRenderingCanvas(),true)
+            this.camera.upperRadiusLimit=35;
+            this.camera.lowerRadiusLimit=10;
+            this.camera.upperBetaLimit=1.5;
+            this.camera.fov = 0.35;
+        }
         this.camera.parent = yTilt;
         this.scene.activeCamera = this.camera;
         return this.camera;
