@@ -78,6 +78,7 @@ io.on('connect', socket => {
 
     socket.on("logout",async data=>{
         socket.leave(data)
+        console.log("disconnect")
         delete players[socket.id];
         await User.updateOne({_id:userId},{connected:false});
         await Profile.updateOne({user:userId},{tutorial:false});

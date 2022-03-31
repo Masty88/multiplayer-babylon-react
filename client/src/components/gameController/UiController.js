@@ -49,12 +49,11 @@ class UiController extends GameObject{
         });
 
         //Instruction
-       // if(this.profile.tutorial || this.showInstruction){
             this.containerFull= new Rectangle();
             this.containerFull.width= "100%"
             this.containerFull.height= "100%";
             this.containerFull.background= "rgba(0,0,0,0.9)"
-            if(!this.profile.tutorial){
+            if(!this.profile.tutorial ){
                 this.containerFull.notRenderable=true;
             }
             playerUI.addControl(this.containerFull);
@@ -270,7 +269,7 @@ const Dropdown = (function () {
         enumerable: true,
         configurable: true
     });
-    Dropdown.prototype.addOption = function (room,socket,dispatch,action,value, text, color, background) {
+    Dropdown.prototype.addOption = function (room,socket,dispatch,action,value, text, color, background, actualroom) {
         const _this = this;
         const button =  Button.CreateSimpleButton(text, text);
         button.height = _this.height;
@@ -283,10 +282,12 @@ const Dropdown = (function () {
             _this.selected = button;
             _this.selectedValue = value;
             action.payload=_this.button.children[0].text;
-            socket.removeAllListeners()
-            socket.emit("logout",room);
-            //socket.leave(this.value)
-            dispatch(action);
+            if(room != action.payload){
+                socket.removeAllListeners()
+                socket.emit("logout",room);
+                //socket.leave(this.value)
+                dispatch(action);
+            }
         });
         this.options.addControl(button);
     };
