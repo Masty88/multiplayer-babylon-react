@@ -31,6 +31,7 @@ class UiBonusGameController extends GameObject{
         const clockTime = new TextBlock();
         clockTime.name = "clock";
         clockTime.textHorizontalAlignment = TextBlock.HORIZONTAL_ALIGNMENT_CENTER;
+        clockTime.zIndex=-1;
         clockTime.verticalAlignment= Control.VERTICAL_ALIGNMENT_TOP;
         clockTime.verticalAlignment= Control.VERTICAL_ALIGNMENT_TOP;
         clockTime.fontSize = "48px";

@@ -116,8 +116,8 @@ class PlayerController extends GameObject{
             PlayerController.PLAYER_SPEED=0.45
             PlayerController.JUMP_FORCE=1.2
         }else{
-            PlayerController.PLAYER_SPEED=PlayerController.PLAYER_SPEED;
-            PlayerController.JUMP_FORCE=PlayerController.JUMP_FORCE
+            PlayerController.PLAYER_SPEED=0.2;
+            PlayerController.JUMP_FORCE=0.8;
         }
         //final movement that takes into consideration the inputs
         this.moveDirection = this.moveDirection.scaleInPlace(this._inputAmt * PlayerController.PLAYER_SPEED);
