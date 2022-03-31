@@ -23,7 +23,7 @@ class EnvironmentController extends GameObject{
         this._lightmtl = lightmtl;
     }
     async load(){
-        this.createBonusPortail()
+        await this.createBonusPortal()
 
         const assets = await this.loadAsset();
         assets.allMeshes.forEach(mesh=>{
@@ -107,11 +107,18 @@ class EnvironmentController extends GameObject{
 
     }
 
-    createBonusPortail(){
+    async createBonusPortal(){
         if(this.city=="start_town_blend.glb"){
-            console.log("city",this.city)
-            let portal=MeshBuilder.CreateBox("portal", {size:5}, this.scene);
+            let portal=MeshBuilder.CreateBox("portal", {width:5, height:10, depth:3}, this.scene);
             portal.position= new Vector3(0,0,-15);
+            portal.isVisible= false;
+            const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "portal.glb", this.scene)
+            //result.meshes[0].position= portal.position
+            result.meshes[0].parent= portal
+            return{
+                portal,
+                result,
+            }
         }
     }
 

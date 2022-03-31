@@ -45,7 +45,7 @@ class GameController {
         })
         socket.on("anotherPlayerAnimated",(data)=>{
             this.player= this.players[data.id];
-            if(data.animation !== null){
+            if(data.animation !== null && this.player){
                 this.player.mesh[data.animation].loopAnimation= true
                 this.player.mesh[data.animation].stop()
                 this.player.mesh[data.animation].play(this.player.mesh[data.animation].loopAnimation)
