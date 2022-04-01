@@ -102,6 +102,10 @@ class UiBonusGameController extends GameObject{
         this.textBlock.verticalAlignment= Control.VERTICAL_ALIGNMENT_CENTER;
         this.result.addControl(this.textBlock)
 
+        if(this.time>10){
+            console.log("ok")
+        }
+
         return this.result;
     }
 
