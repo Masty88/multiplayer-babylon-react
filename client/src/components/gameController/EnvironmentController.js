@@ -110,7 +110,7 @@ class EnvironmentController extends GameObject{
     async createBonusPortal(){
         if(this.city=="start_town_blend.glb"){
             let portal=MeshBuilder.CreateBox("portal", {width:5, height:10, depth:3}, this.scene);
-            portal.position= new Vector3(0,0,-15);
+            portal.position= new Vector3(-5,0,-45);
             portal.isVisible= false;
             const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "portal.glb", this.scene)
             //result.meshes[0].position= portal.position

@@ -100,6 +100,7 @@ class UiController extends GameObject{
         this.menu.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_LEFT
 
 
+
         //Logout Button
         this.logoutButton=this.createButton("logout","Logout", "-50px")
         this.containerTop.addControl(this.logoutButton);
