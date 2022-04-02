@@ -29,7 +29,7 @@ class PlayerCreator extends GameObject{
         if(this.value==="BONUS_GAME" && this.scene.getTransformNodeByName("startPosition")){
             this.mesh.position=this.scene.getTransformNodeByName("startPosition").getAbsolutePosition()
         }else{
-            this.mesh.position.y=0;
+            this.mesh.position.y=this.scene.getMeshByName("street").position.y
             this.mesh.position.x=Math.floor(Math.random()*3)
             this.mesh.position.z=Math.floor(Math.random()*5)
         }

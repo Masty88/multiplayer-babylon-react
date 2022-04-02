@@ -14,12 +14,13 @@ import {
 class InputController extends GameObject{
 
 
-    constructor(socket, player, value, engine) {
+    constructor(socket, player, value, engine, dispatch, logout) {
         super();
         this.value= value
         this.player= player;
-
         this.engine= engine;
+        this.dispatch=dispatch;
+        this.logout=logout;
         this.scene.actionManager= new ActionManager(this.scene);
         this.inputMap={};
 
@@ -34,7 +35,7 @@ class InputController extends GameObject{
         this.scene.onAfterRenderObservable.add(()=>{
             this.updateFromKeyboard();
         })
-
+        this.startTime = new Date().getTime();
     }
 
     updateFromKeyboard=()=>{
@@ -70,9 +71,16 @@ class InputController extends GameObject{
 
         if(this.inputMap["ArrowDown"] || this.inputMap["ArrowUp"] || this.inputMap["ArrowRight"] || this.inputMap["ArrowLeft"]){
             this.notifyServer= true;
+            this.startTime=new Date().getTime();
         }
         else{
             this.notifyServer= false;
+            //If inactive for more than 5 minutes logout
+            this.prevTime = 0;
+            this.inactiveTime = Math.floor((new Date().getTime() - this.startTime) / 1000) + this.prevTime; // divide by 1000 to get seconds
+            if(this.inactiveTime >= 320){
+                this.dispatch(this.logout)
+            }
         }
 
         if(this.notifyServer){
