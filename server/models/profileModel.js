@@ -1,3 +1,4 @@
+//TODO add bonus game only one time in 24hours
 const mongoose = require('mongoose');
 
 const ProfileSchema = new mongoose.Schema({

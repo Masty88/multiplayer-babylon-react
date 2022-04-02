@@ -68,7 +68,6 @@ io.on('connect', socket => {
     })
     socket.on("playerMove",(data)=>{
         players[data.id]= data;
-        console.log(data)
         socket.to(data.room).emit("anotherPlayerMove",data)
     })
     socket.on("playAnimation", (data)=>{
@@ -78,14 +77,12 @@ io.on('connect', socket => {
 
     socket.on("logout",async data=>{
         socket.leave(data)
-        console.log("disconnect")
         delete players[socket.id];
         await User.updateOne({_id:userId},{connected:false});
         await Profile.updateOne({user:userId},{tutorial:false});
         socket.broadcast.emit("playerExit", socket.id)
     })
     socket.on("disconnect",  async (data)=> {
-        console.log("disconnect")
         await User.updateOne({_id:userId},{connected:false});
         await Profile.updateOne({user:userId},{tutorial:false});
         delete players[socket.id];

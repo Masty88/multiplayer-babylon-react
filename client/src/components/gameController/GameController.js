@@ -89,7 +89,6 @@ class GameController {
         scene.clearColor=new Color4(0,0,0,1);
         let camera = new FreeCamera("camera1", new Vector3(0, 0, 0), scene);
         camera.setTarget(Vector3.Zero());
-        console.log(socket)
 
         this.changeScene.payload="START_CITY"
         this.dispatch(this.changeScene);

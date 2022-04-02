@@ -38,7 +38,6 @@ class UiController extends GameObject{
         this.containerBottom.height= "64px";
         this.containerBottom.color= "transparent"
         playerUI.addControl(this.containerBottom)
-        console.log(this.profile.tutorial)
         this.containerBottom.verticalAlignment= Control.VERTICAL_ALIGNMENT_BOTTOM;
 
         this.instructionButton=this.createButton("inst","Instruction","0","0");

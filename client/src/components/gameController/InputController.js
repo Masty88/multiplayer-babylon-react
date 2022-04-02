@@ -1,15 +1,9 @@
 import GameObject from "./GameObject";
 import {
     ActionManager,
-    ArcRotateCamera,
     ExecuteCodeAction,
-    FreeCamera,
-    PointerEventTypes,
-    Scalar, TransformNode,
-    Vector3
+    Scalar,
 } from "@babylonjs/core";
-
-
 
 class InputController extends GameObject{
 

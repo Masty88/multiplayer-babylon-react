@@ -134,7 +134,6 @@ class EnvironmentController extends GameObject{
                     },
                     () => {
                         //if the lantern is not lit, light it up & reset sparkler timer
-                        console.log("here")
                         if (!lantern.isLit) {
                             player.lanternsLit += 1; //increment the lantern count
                             lantern.setEmissiveTexture(); //"light up" the lantern
