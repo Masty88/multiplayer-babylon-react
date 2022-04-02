@@ -3,7 +3,7 @@ import EnvironmentController from "./EnvironmentController";
 import PlayerController from "./PlayerController";
 import {
     Color3,
-    Color4, DirectionalLight, FreeCamera,
+    Color4, DirectionalLight, FreeCamera, GlowLayer,
     HemisphericLight, PointLight,
     ShadowGenerator,
     Vector3
@@ -132,6 +132,12 @@ class GameController {
                 }
                 uiBonus.updateUI()
             })
+            //glow layer
+            const gl = new GlowLayer("glow", scene);
+            gl.intensity = 0.4;
+            this.environment._lanternObjs.forEach(lantern => {
+                gl.addIncludedOnlyMesh(lantern.mesh);
+            });
         }
     }
 
