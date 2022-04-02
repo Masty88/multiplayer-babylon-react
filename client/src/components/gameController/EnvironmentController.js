@@ -8,6 +8,7 @@ import {
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import Lantern from "./Lantern";
+import {AdvancedDynamicTexture, Control, TextBlock} from "@babylonjs/gui";
 
 
 class EnvironmentController extends GameObject{
@@ -113,7 +114,6 @@ class EnvironmentController extends GameObject{
             portal.position= new Vector3(-5,0,-45);
             portal.isVisible= false;
             const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "portal.glb", this.scene)
-            //result.meshes[0].position= portal.position
             result.meshes[0].parent= portal
             return{
                 portal,

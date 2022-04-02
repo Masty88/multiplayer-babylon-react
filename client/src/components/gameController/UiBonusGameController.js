@@ -70,10 +70,14 @@ class UiBonusGameController extends GameObject{
             this.containerFull.notRenderable=true;
             this.startTimer()
         });
-        if(this.time >=240){
-            this.gameInstruction.isVisible=false;
-            this.closeButton.isVisible=false;
-        }
+
+        //lose Instruction
+        this.loseMessage= this.createInstruction("loose_inst", "","Sorry you fail")
+        this.loseMessage.horizontalAlignment=Control.HORIZONTAL_ALIGNMENT_CENTER;
+
+        //Win Instruction
+        this.winMessage= this.createInstruction("loose_inst", "","Great you win 1000 token")
+        this.winMessage.horizontalAlignment=Control.HORIZONTAL_ALIGNMENT_CENTER;
 
         this.prevTime = 0;
         this._sString="00";
@@ -101,10 +105,6 @@ class UiBonusGameController extends GameObject{
         this.textBlock.horizontalAlignment= Control.HORIZONTAL_ALIGNMENT_CENTER;
         this.textBlock.verticalAlignment= Control.VERTICAL_ALIGNMENT_CENTER;
         this.result.addControl(this.textBlock)
-
-        if(this.time>10){
-            console.log("ok")
-        }
 
         return this.result;
     }
@@ -139,8 +139,6 @@ class UiBonusGameController extends GameObject{
             //LOSE CONDITION
             if(this.time>=240){
                 //Lose Instruction
-                this.loseMessage= this.createInstruction("loose_inst", "","Sorry you fail")
-                this.loseMessage.horizontalAlignment=Control.HORIZONTAL_ALIGNMENT_CENTER;
                 this.containerFull.addControl(this.loseMessage)
                 this.containerFull.removeControl(this.gameInstruction);
                 this.containerFull.removeControl(this.closeButton);
@@ -156,9 +154,6 @@ class UiBonusGameController extends GameObject{
             this.lanternCnt.text = "Lanterns: " + numLanterns + " / 22";
         //LOSE CONDITION
         if(numLanterns===22){
-            //Win Instruction
-            this.winMessage= this.createInstruction("loose_inst", "","Great you win 1000 token")
-            this.winMessage.horizontalAlignment=Control.HORIZONTAL_ALIGNMENT_CENTER;
             this.containerFull.addControl(this.winMessage)
             this.containerFull.removeControl(this.gameInstruction);
             this.containerFull.removeControl(this.closeButton);
@@ -176,7 +171,7 @@ class UiBonusGameController extends GameObject{
     formatTime(time){
         let minsPassed = Math.floor(time / 60); //seconds in a min
         console.log("min",minsPassed)
-        let secPassed = time; // goes back to 0 after 4mins/240sec
+        let secPassed = time;
         if(time>=60){
             secPassed= time - 60 *(minsPassed)
         }

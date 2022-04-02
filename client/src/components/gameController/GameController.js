@@ -128,7 +128,6 @@ class GameController {
             scene.onBeforeRenderObservable.add(() => {
                 //reset the sparkler timer
                 if (this.player.sparkReset) {
-                    // ui.startSparklerTimer(this.player.sparkler);
                     this.player.sparkReset = false;
                     uiBonus.updateLanternCount(this.player.lanternsLit);
                 }
@@ -187,7 +186,7 @@ class GameController {
             }else{
                 this.shadowGenerator= new ShadowGenerator(1000,this.light0)
               socket.emit("playerCreated", this.player.state);
-                  this.input= new InputController(socket,this.player, this.value,this.engine);
+                  this.input= new InputController(socket,this.player, this.value,this.engine,this.dispatch,this.logout);
                   this.player.controller=  new PlayerController(this.input,
                       this.player,
                       this.value,
