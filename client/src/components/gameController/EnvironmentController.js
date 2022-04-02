@@ -114,11 +114,13 @@ class EnvironmentController extends GameObject{
             let portal=MeshBuilder.CreateBox("portal", {width:5, height:10, depth:3}, this.scene);
             portal.position= new Vector3(-5,0,-45);
             portal.isVisible= false;
-            const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "portal.glb", this.scene)
+            const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "portal2.glb", this.scene)
             result.meshes[0].parent= portal
             //glow layer
-            const gl = new GlowLayer("glow", this.scene);
-            gl.intensity = 4;
+            const gl = new GlowLayer("glow", this.scene,{
+                blurKernelSize: 64
+            });
+            gl.intensity = 0.5;
             gl.addIncludedOnlyMesh(this.scene.getMeshByID("holo"));
             return{
                 portal,
