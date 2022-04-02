@@ -1,6 +1,5 @@
 # <center>MyVerse</center>  <hr style="border:1px solid gray"> </hr>
-## Share and watch your medias
-### Features:  🎥 Movies, 🎵 Music
+## Explore and play
 
 Saeverse is an online multiplayer metaverse made with react babylon.js and Socket.io the world is still under construction
 
