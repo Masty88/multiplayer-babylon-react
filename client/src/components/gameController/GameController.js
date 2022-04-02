@@ -191,7 +191,7 @@ class GameController {
             }else{
                 this.shadowGenerator= new ShadowGenerator(1000,this.light0)
               socket.emit("playerCreated", this.player.state);
-                  this.input= new InputController(socket,this.player, this.value,this.engine,this.dispatch,this.logout);
+                  this.input= new InputController(socket,this.player, this.value,this.engine,this.dispatch,this.logout,this.resetProfile);
                   this.player.controller=  new PlayerController(this.input,
                       this.player,
                       this.value,

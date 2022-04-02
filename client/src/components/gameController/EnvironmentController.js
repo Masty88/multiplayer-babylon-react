@@ -2,7 +2,7 @@
 import GameObject from "./GameObject";
 import {
     ActionManager,
-    Color3, ExecuteCodeAction,
+    Color3, ExecuteCodeAction, GlowLayer,
     MeshBuilder, PBRMetallicRoughnessMaterial,
     SceneLoader, Texture, TransformNode,
     Vector3
@@ -116,6 +116,10 @@ class EnvironmentController extends GameObject{
             portal.isVisible= false;
             const result= await SceneLoader.ImportMeshAsync(null,"/assets/", "portal.glb", this.scene)
             result.meshes[0].parent= portal
+            //glow layer
+            const gl = new GlowLayer("glow", this.scene);
+            gl.intensity = 4;
+            gl.addIncludedOnlyMesh(this.scene.getMeshByID("holo"));
             return{
                 portal,
                 result,

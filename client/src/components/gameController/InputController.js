@@ -73,7 +73,7 @@ class InputController extends GameObject{
             //If inactive for more than 5 minutes logout
             this.prevTime = 0;
             this.inactiveTime = Math.floor((new Date().getTime() - this.startTime) / 1000) + this.prevTime; // divide by 1000 to get seconds
-            if(this.inactiveTime >= 320){
+            if(this.inactiveTime >= 10){
                 this.socket.emit("logout", this.value);
                 this.dispatch(this.logout)
                 this.dispatch(this.resetProfile)
