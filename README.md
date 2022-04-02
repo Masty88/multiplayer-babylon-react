@@ -2,15 +2,8 @@
 ## Share and watch your medias
 ### Features:  🎥 Movies, 🎵 Music
 
-Mudeo is a web application that allow you to upload up to 5 files. Mudeo is made also for streaming.
+Saeverse is an online multiplayer metaverse made with react babylon.js and Socket.io the world is still under construction
 
-Accepted formats for medias:
-
--***mp3, waw, webm, mp4***
-
-Accepted formats for cover image:
-
--***jpeg, jpg, png***
 
 ![Screenshot](md-files/home.png)
 
