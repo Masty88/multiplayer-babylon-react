@@ -115,7 +115,7 @@ class GameController {
     }
 
     async setUpGame(scene,socket){
-        const ui= new uiController(this.dispatch, this.logout, socket,this.changeScene,this.value, this.resetProfile,this.profile)
+        const ui= new uiController(this.dispatch, this.logout, socket,this.changeScene,this.value, this.resetProfile,this.profile, this.resetProfile)
         const environment= new EnvironmentController(this.city,this.player)
         this.environment= environment;
         await this.environment.load()

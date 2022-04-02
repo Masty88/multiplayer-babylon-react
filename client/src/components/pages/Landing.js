@@ -61,10 +61,10 @@ const Landing = () => {
                 justifyContent:"flex-end"
             }}>
                 <Typography variant="h1" sx={{marginBottom:"35px"}} sm={{fontSize:"5px"}}>
-                    Welcome to MyVerse
+                    Welcome to SaeVerse
                 </Typography>
                 <Typography variant="h5" sx={{marginBottom:"35px"}} style={{fontWeight:100}}>
-                    Explore and trade in the first-ever virtual world owned by its users.
+                    Explore the first-ever virtual world of Sae Institute.
                 </Typography>
                 <Link style={{ textDecoration: 'none' }}  to='/register'>
                 <Button variant="contained" sx={{maxWidth:"250px",minHeight:"3em", width:"calc(50% - 1em)", marginBottom:"45vh", fontSize:"18px", color:"white"}}>

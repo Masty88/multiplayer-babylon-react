@@ -8,13 +8,14 @@ import {
 class InputController extends GameObject{
 
 
-    constructor(socket, player, value, engine, dispatch, logout) {
+    constructor(socket, player, value, engine, dispatch, logout, resetProfile) {
         super();
         this.value= value
         this.player= player;
         this.engine= engine;
         this.dispatch=dispatch;
         this.logout=logout;
+        this.resetProfile= resetProfile
         this.scene.actionManager= new ActionManager(this.scene);
         this.inputMap={};
 
@@ -73,7 +74,9 @@ class InputController extends GameObject{
             this.prevTime = 0;
             this.inactiveTime = Math.floor((new Date().getTime() - this.startTime) / 1000) + this.prevTime; // divide by 1000 to get seconds
             if(this.inactiveTime >= 320){
+                this.socket.emit("logout", this.value);
                 this.dispatch(this.logout)
+                this.dispatch(this.resetProfile)
             }
         }
 

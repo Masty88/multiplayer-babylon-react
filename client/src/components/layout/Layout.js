@@ -49,7 +49,9 @@ const Layout = ({children})=>{
             <AppBar position="static" sx={{bgcolor:"transparent", boxShadow:"none", backgroundImage:"none",pl:"10vw", pr:"10vw"}}>
                 <Toolbar sx={{
                     display: 'flex', justifyContent: 'space-between', alignItems: ' center'}} >
-                    <Typography variant="h5" component="h1">Mediverse</Typography>
+                    <Typography variant="h5" component="h1">
+                        Saeverse
+                    </Typography>
                     <Box>
                         {user ?
                             (<Button variant="contained" onClick={onLogout} sx={{bgcolor:"primary.dark", color:"white"}} startIcon={<LogoutIcon/>}>

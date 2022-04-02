@@ -1,3 +1,4 @@
+//TODO add glow layer to portal
 import GameObject from "./GameObject";
 import {
     ActionManager,

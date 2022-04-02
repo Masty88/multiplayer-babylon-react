@@ -23,21 +23,6 @@ Copy the project in your folder and run npm install
 -Npm
 
 
-## Upload Media
-The file that manage the uploading is under app/controllers/medias/add. When a cover image is add the file is resized to the correct Ratio.
-Video size must be < 1gb. When the video is uploaded the FFMMPEG libraries first compress and resize the video to 1920x1080 px format. Video is renamed with a unique id and place into public/entities/videos and the link is added to bdd.entities.full_media.
-You can change the output format size with FFMPEG for further information please reade the complete documentation on FFMPEG <a href="https://ffmpeg.org/documentation.html">Documentation</a>
-```
-$cmd="$ff -i $file_temp  -s 1920:1080  $final_directory";
-```
-When an Audio file is uploaded FFMPEG automatically create a mp4 video with audio wave. You can change the output format size, the wave color and format with FFMPEG for further information please read the complete documentation on FFMPEG <a href="https://ffmpeg.org/documentation.html">Documentation</a>
-```
-$filter="[0:a]showwaves=colors=blueviolet:s=1280x720:mode=cline,format=yuv420p[v]";
- $map="[v]";
- $cmd="$ff  -i $file_temp -filter_complex $filter -map $map -map 0:a -c:v libx264 -c:a copy $final_directory";
-```
-![Screenshot](md-files/upload.png)
-
 ## License
 This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details
 
