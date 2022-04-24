@@ -2,10 +2,10 @@
 import GameObject from "./GameObject";
 import {
     ActionManager,
-    Color3, ExecuteCodeAction, GlowLayer,
+    Color3, EasingFunction, ExecuteCodeAction, GlowLayer,
     MeshBuilder, PBRMetallicRoughnessMaterial,
-    SceneLoader, Texture, TransformNode,
-    Vector3
+    SceneLoader, SineEase, Texture, TransformNode,
+    Vector3, Animation, NodeMaterial
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import Lantern from "./Lantern";
@@ -13,6 +13,7 @@ import {AdvancedDynamicTexture, Control, TextBlock} from "@babylonjs/gui";
 
 
 class EnvironmentController extends GameObject{
+    emissiveStrength;
     constructor(city) {
         super();
         this.city= city;
@@ -111,6 +112,14 @@ class EnvironmentController extends GameObject{
 
     async createBonusPortal(){
         if(this.city=="start_town_blend.glb"){
+            this.lightNodeMat = new NodeMaterial("lightNodeMat", this.scene, {emitComments: false});
+            var lightBaseColorTex;
+            var lightEmissiveTex;
+            // build node material
+            this.lightNodeMat.build(false);
+            this.lightMesh = this.scene.getMeshByName("emissiveTexture");
+            this.loadedTextures = this.lightMesh.material.getActiveTextures();
+            this.lightMesh.material = this.lightNodeMat;
             let portal=MeshBuilder.CreateBox("portal", {width:5, height:10, depth:3}, this.scene);
             portal.position= new Vector3(-5,0,-45);
             portal.isVisible= false;
@@ -122,6 +131,26 @@ class EnvironmentController extends GameObject{
             });
             gl.intensity = 0.5;
             gl.addIncludedOnlyMesh(this.scene.getMeshByID("holo"));
+            const flickerAnim = new Animation("flickerAnim", "value", 60, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+            var easingFunction = new SineEase();
+            easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+            var flickerKeys = [
+                {frame: 0, value: 0.2},
+                {frame: 5, value: 0.8},
+                {frame: 10, value: 0.1},
+                {frame: 25, value: 0.8},
+                {frame: 30, value: 0.05},
+                {frame: 35, value: 0.7},
+                {frame: 40, value: 0.3},
+                {frame: 55, value: 0.5},
+                {frame: 70, value: 0.35},
+                {frame: 170, value: 1.0}
+            ];
+            this.emissiveColor = this.lightNodeMat.getBlockByName("emissiveTexture");
+            flickerAnim.setKeys(flickerKeys);
+            flickerAnim.setEasingFunction(easingFunction);
+            this.scene.beginDirectAnimation(this.lightMesh, [flickerAnim], 0, flickerKeys[flickerKeys.length - 1].frame, true, 1);
+
             return{
                 portal,
                 result,
